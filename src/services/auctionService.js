@@ -4,7 +4,7 @@
  * Conecte estas funções ao seu backend/Supabase conforme necessário.
  */
 
-export const COMMISSION_RATE = 0.08 // 8%
+export const COMMISSION_RATE = 0.05 // 5%
 
 /**
  * Valida se um novo lance é válido.

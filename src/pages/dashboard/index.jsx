@@ -1,141 +1,178 @@
-// MyAuctions.jsx
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { addDays } from 'date-fns'
 import CountdownTimer from '../../components/CountdownTimer'
-import { formatCurrency } from '../../services/auctionService'
+import { SkeletonRow } from '../../components/Skeleton'
+import { formatCurrency, COMMISSION_RATE } from '../../services/auctionService'
+import { supabase } from '../../services/supabase'
+import { useAuth } from '../../contexts/AuthContext'
 
-const AUCTIONS = [
-  { id: '1', title: 'Lenovo ThinkPad E14 — lote 8', minPrice: 8000, currentBid: 9800, totalBids: 6, status: 'active', endsAt: addDays(new Date(), 0.09).toISOString() },
-  { id: '2', title: 'Monitor Dell 27" — 4 un.', minPrice: 1500, currentBid: 1750, totalBids: 3, status: 'active', endsAt: addDays(new Date(), 0.03).toISOString() },
-  { id: '3', title: 'Nobreak APC 1500VA', minPrice: 450, currentBid: 450, totalBids: 1, status: 'active', endsAt: addDays(new Date(), 5).toISOString() },
-  { id: '4', title: 'Switch Cisco 48 portas', minPrice: 2000, currentBid: null, totalBids: 0, status: 'active', endsAt: addDays(new Date(), 7).toISOString() },
-  { id: '5', title: 'Rack servidor 42U', minPrice: 1800, currentBid: null, totalBids: 0, status: 'draft', endsAt: null },
-  { id: '6', title: 'Impressora HP M507', minPrice: 900, currentBid: 1050, totalBids: 4, status: 'ended', endsAt: null },
-  { id: '7', title: 'Access points Ubiquiti', minPrice: 800, currentBid: null, totalBids: 0, status: 'unsold', endsAt: null },
-]
-
-const STATUS_LABEL = {
-  active: <span className="badge-green">Ativo</span>,
-  draft: <span className="badge-gray">Rascunho</span>,
-  ended: <span className="badge-green">Encerrado</span>,
-  unsold: <span className="badge-gray">Sem venda</span>,
+// ── STATUS helpers ────────────────────────────────────────
+const STATUS_BADGE = {
+  active:             <span className="badge-green">Ativo</span>,
+  draft:              <span className="badge-gray">Rascunho</span>,
+  pending_moderation: <span className="badge-amber">Em análise</span>,
+  ended:              <span className="badge-blue">Encerrado</span>,
+  sold:               <span className="badge-green">Vendido</span>,
+  unsold:             <span className="badge-gray">Sem venda</span>,
+  cancelled:          <span className="badge-red">Cancelado</span>,
 }
 
+// ── MyAuctions ────────────────────────────────────────────
 export function MyAuctions() {
   const navigate = useNavigate()
+  const { company } = useAuth()
+  const [auctions, setAuctions] = useState([])
+  const [loading, setLoading]   = useState(true)
+
+  useEffect(() => {
+    if (!company) return
+    async function load() {
+      const { data } = await supabase
+        .from('auctions')
+        .select('*, bids(amount)')
+        .eq('seller_id', company.id)
+        .order('created_at', { ascending: false })
+      if (data) {
+        setAuctions(data.map(a => ({
+          ...a,
+          currentBid: a.bids?.length ? Math.max(...a.bids.map(b => b.amount)) : null,
+          totalBids: a.bids?.length ?? 0,
+        })))
+      }
+      setLoading(false)
+    }
+    load()
+  }, [company])
+
+  const counts = {
+    active: auctions.filter(a => a.status === 'active').length,
+    ended:  auctions.filter(a => ['ended','sold'].includes(a.status)).length,
+    draft:  auctions.filter(a => ['draft','pending_moderation'].includes(a.status)).length,
+  }
+
   return (
-    <div className="max-w-4xl mx-auto px-6 py-8">
+    <div className="max-w-4xl mx-auto px-4 md:px-6 py-6 md:py-8">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-lg font-semibold">Meus leilões</h1>
-          <p className="text-sm text-gray-400">5 ativos · 2 encerrados · 1 rascunho</p>
+          {!loading && (
+            <p className="text-sm text-gray-400 mt-0.5">
+              {counts.active} ativo{counts.active !== 1 ? 's' : ''} · {counts.ended} encerrado{counts.ended !== 1 ? 's' : ''} · {counts.draft} rascunho{counts.draft !== 1 ? 's' : ''}
+            </p>
+          )}
         </div>
-        <button onClick={() => navigate('/painel/novo')} className="btn-primary">+ Novo leilão</button>
+        <button onClick={() => navigate('/painel/novo')} className="btn-primary text-sm">
+          + Novo leilão
+        </button>
       </div>
+
+      {/* Tabela — scrollável no mobile */}
       <div className="card overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b border-gray-100">
-            <tr>{['Equipamento', 'Mínimo', 'Lance atual', 'Lances', 'Encerra em', 'Status', ''].map(h => (
-              <th key={h} className="text-left text-xs font-medium text-gray-400 uppercase tracking-wide px-4 py-3">{h}</th>
-            ))}</tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {AUCTIONS.map(a => (
-              <tr key={a.id} className={`hover:bg-gray-50 ${a.status === 'ended' || a.status === 'unsold' ? 'opacity-60' : ''}`}>
-                <td className="px-4 py-3 font-medium text-gray-900">{a.title}</td>
-                <td className="px-4 py-3 text-gray-600">{formatCurrency(a.minPrice)}</td>
-                <td className="px-4 py-3 font-semibold text-emerald-600">{a.currentBid ? formatCurrency(a.currentBid) : <span className="text-gray-300 font-normal">—</span>}</td>
-                <td className="px-4 py-3 text-gray-600">{a.totalBids}</td>
-                <td className="px-4 py-3">{a.endsAt ? <CountdownTimer endsAt={a.endsAt} /> : '—'}</td>
-                <td className="px-4 py-3">{STATUS_LABEL[a.status]}</td>
-                <td className="px-4 py-3">
-                  {a.status === 'draft' && <button className="btn-sm">Publicar</button>}
-                  {a.status === 'unsold' && <button onClick={() => navigate('/painel/novo')} className="btn-sm">Relançar</button>}
-                  {(a.status === 'active' || a.status === 'ended') && <button className="btn-sm">Detalhes</button>}
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[640px]">
+            <thead className="bg-gray-50 border-b border-gray-100">
+              <tr>
+                {['Equipamento', 'Mínimo', 'Lance atual', 'Lances', 'Encerra em', 'Status', ''].map(h => (
+                  <th key={h} className="text-left text-xs font-medium text-gray-400 uppercase tracking-wide px-4 py-3 whitespace-nowrap">{h}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {loading
+                ? Array(4).fill(0).map((_, i) => <tr key={i}><td colSpan={7}><SkeletonRow /></td></tr>)
+                : auctions.length === 0
+                  ? (
+                    <tr>
+                      <td colSpan={7} className="py-12 text-center text-sm text-gray-400">
+                        Nenhum leilão ainda.{' '}
+                        <button onClick={() => navigate('/painel/novo')} className="text-emerald-600 font-medium hover:underline">
+                          Criar o primeiro
+                        </button>
+                      </td>
+                    </tr>
+                  )
+                  : auctions.map(a => (
+                      <tr key={a.id} className={`hover:bg-gray-50 transition-colors ${['ended','unsold','cancelled'].includes(a.status) ? 'opacity-60' : ''}`}>
+                        <td className="px-4 py-3 font-medium text-gray-900 max-w-[200px] truncate">{a.title}</td>
+                        <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{formatCurrency(a.min_price)}</td>
+                        <td className="px-4 py-3 font-semibold whitespace-nowrap">
+                          {a.currentBid
+                            ? <span className="text-emerald-600">{formatCurrency(a.currentBid)}</span>
+                            : <span className="text-gray-300 font-normal">—</span>}
+                        </td>
+                        <td className="px-4 py-3 text-gray-600">{a.totalBids}</td>
+                        <td className="px-4 py-3">
+                          {a.ends_at ? <CountdownTimer endsAt={a.ends_at} /> : <span className="text-gray-300">—</span>}
+                        </td>
+                        <td className="px-4 py-3">{STATUS_BADGE[a.status] ?? <span className="badge-gray">{a.status}</span>}</td>
+                        <td className="px-4 py-3">
+                          {a.status === 'draft' && <button className="btn-sm">Publicar</button>}
+                          {a.status === 'unsold' && <button onClick={() => navigate('/painel/novo')} className="btn-sm">Relançar</button>}
+                          {['active','ended','sold'].includes(a.status) && (
+                            <button onClick={() => navigate(`/leilao/${a.id}`)} className="btn-sm">Ver</button>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+              }
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )
 }
 
-// Bids.jsx
-import BidList from '../../components/BidList'
-
-const BID_AUCTION = {
-  title: 'Lenovo ThinkPad E14 — lote 8 un.',
-  minPrice: 8000,
-  currentBid: 9800,
-  endsAt: addDays(new Date(), 0.09).toISOString(),
-  bids: [
-    { id: '1', company: 'TechNova Soluções LTDA', cnpj: true, amount: 9800, createdAt: new Date(Date.now() - 7200000).toISOString() },
-    { id: '2', company: 'DataHub Corp', cnpj: true, amount: 9200, createdAt: new Date(Date.now() - 10800000).toISOString() },
-    { id: '3', company: 'TechNova Soluções LTDA', cnpj: true, amount: 8800, createdAt: new Date(Date.now() - 14400000).toISOString() },
-    { id: '4', company: 'DataHub Corp', cnpj: true, amount: 8400, createdAt: new Date(Date.now() - 18000000).toISOString() },
-    { id: '5', company: 'Soluções Omega ME', cnpj: true, amount: 8200, createdAt: new Date(Date.now() - 86400000).toISOString() },
-    { id: '6', company: 'TechNova Soluções LTDA', cnpj: true, amount: 8000, createdAt: new Date(Date.now() - 90000000).toISOString() },
-  ],
-}
-
+// ── Bids ──────────────────────────────────────────────────
 export function Bids() {
   return (
-    <div className="max-w-2xl mx-auto px-6 py-8">
+    <div className="max-w-2xl mx-auto px-4 md:px-6 py-6 md:py-8">
       <h1 className="text-lg font-semibold mb-1">Lances recebidos</h1>
       <p className="text-sm text-gray-400 mb-6">Acompanhe em tempo real quem está disputando seus leilões</p>
       <div className="card p-5">
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <div className="text-sm font-semibold">{BID_AUCTION.title}</div>
-            <div className="text-xs text-gray-400 mt-0.5">Mínimo: {formatCurrency(BID_AUCTION.minPrice)}</div>
-          </div>
-          <div className="text-right">
-            <div className="text-xs text-gray-400">Lance atual</div>
-            <div className="text-lg font-semibold text-emerald-600">{formatCurrency(BID_AUCTION.currentBid)}</div>
-            <CountdownTimer endsAt={BID_AUCTION.endsAt} />
-          </div>
-        </div>
-        {/* Barra de progresso */}
-        <div className="h-1.5 bg-gray-100 rounded-full mb-1 overflow-hidden">
-          <div className="h-full bg-emerald-500 rounded-full" style={{ width: '82%' }} />
-        </div>
-        <div className="flex justify-between text-xs text-gray-400 mb-4">
-          <span>Mín. {formatCurrency(BID_AUCTION.minPrice)}</span>
-          <span>Atual {formatCurrency(BID_AUCTION.currentBid)}</span>
-        </div>
-        <BidList bids={BID_AUCTION.bids} />
-        <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
-          <button className="btn-sm flex-1">Prorrogar prazo</button>
-          <button className="btn-sm flex-1">Encerrar agora</button>
-          <button className="btn-sm flex-1 text-red-500 border-red-200 hover:bg-red-50">Cancelar</button>
-        </div>
+        <p className="text-sm text-gray-400 text-center py-8">
+          Selecione um leilão em <button className="text-emerald-600 font-medium hover:underline">Meus leilões</button> para ver os lances.
+        </p>
       </div>
     </div>
   )
 }
 
-// Profile.jsx
+// ── Profile ───────────────────────────────────────────────
 export function Profile() {
+  const { company } = useAuth()
+  const initials = company?.razao_social?.split(' ').slice(0,2).map(w => w[0]).join('').toUpperCase() ?? '??'
+
   return (
-    <div className="max-w-xl mx-auto px-6 py-8">
+    <div className="max-w-xl mx-auto px-4 md:px-6 py-6 md:py-8">
       <h1 className="text-lg font-semibold mb-1">Perfil da empresa</h1>
-      <p className="text-sm text-gray-400 mb-6">Dados verificados pelo newcycle.ia</p>
+      <p className="text-sm text-gray-400 mb-6">Seus dados na plataforma newcycle.ia</p>
       <div className="card p-6">
         <div className="flex items-center gap-4 mb-6 pb-5 border-b border-gray-100">
-          <div className="w-14 h-14 rounded-full bg-emerald-50 flex items-center justify-center text-lg font-semibold text-emerald-700">FR</div>
+          <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-lg font-bold text-emerald-700">
+            {initials}
+          </div>
           <div>
-            <div className="font-semibold">Fintech Radius LTDA</div>
-            <div className="text-xs text-gray-400 mt-0.5">CNPJ 12.345.678/0001-90</div>
-            <span className="badge-green text-xs mt-1">✓ Empresa verificada</span>
+            <p className="font-semibold text-gray-900">{company?.razao_social ?? '—'}</p>
+            <p className="text-xs text-gray-400 mt-0.5">{company?.cnpj ?? ''}</p>
+            {company?.cnpj_verified
+              ? <span className="badge-green text-xs mt-1.5 inline-flex">✓ Empresa verificada</span>
+              : <span className="badge-amber text-xs mt-1.5 inline-flex">Aguardando verificação</span>
+            }
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          {[['Razão social', 'Fintech Radius LTDA'], ['CNPJ', '12.345.678/0001-90'], ['E-mail', 'patrimonio@radius.com.br'], ['Telefone', '(11) 3456-7890'], ['Cidade', 'São Paulo'], ['Estado', 'SP']].map(([label, value]) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {[
+            ['Razão social', company?.razao_social, false],
+            ['CNPJ', company?.cnpj, true],
+            ['E-mail', company?.email, false],
+            ['Telefone', company?.phone, false],
+            ['Cidade', company?.city, false],
+            ['Estado', company?.state, false],
+          ].map(([label, value, disabled]) => (
             <div key={label}>
               <label className="text-xs text-gray-400 block mb-1">{label}</label>
-              <input className="form-input" defaultValue={value} disabled={label === 'CNPJ'} />
+              <input className="form-input" defaultValue={value ?? ''} disabled={disabled} />
             </div>
           ))}
         </div>
@@ -145,55 +182,80 @@ export function Profile() {
   )
 }
 
-// Financial.jsx
-const TRANSACTIONS = [
-  { title: 'Notebooks Lenovo — lote 8', buyer: 'DataHub Corp', gross: 9600, status: 'paid' },
-  { title: 'Impressora HP M507', buyer: 'Clínica Norte', gross: 1050, status: 'paid' },
-  { title: 'Monitor Dell 27" — 4 un.', buyer: 'Contábil Souza', gross: 1750, status: 'pending' },
-]
-
-const COMMISSION = 0.08
-
+// ── Financial ─────────────────────────────────────────────
 export function Financial() {
+  const { company } = useAuth()
+  const [transactions, setTransactions] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!company) return
+    supabase
+      .from('transactions')
+      .select('*, auctions(title), companies!buyer_id(razao_social)')
+      .eq('seller_id', company.id)
+      .order('created_at', { ascending: false })
+      .then(({ data }) => { setTransactions(data ?? []); setLoading(false) })
+  }, [company])
+
+  const total  = transactions.reduce((s, t) => s + (t.net_amount ?? 0), 0)
+  const pending = transactions.filter(t => t.status === 'pending_payment').reduce((s, t) => s + (t.net_amount ?? 0), 0)
+
   return (
-    <div className="max-w-3xl mx-auto px-6 py-8">
+    <div className="max-w-3xl mx-auto px-4 md:px-6 py-6 md:py-8">
       <h1 className="text-lg font-semibold mb-1">Financeiro</h1>
       <p className="text-sm text-gray-400 mb-6">Repasses e comissões dos leilões encerrados</p>
+
       <div className="grid grid-cols-3 gap-3 mb-6">
-        {[['Total arrecadado', 'R$ 24.600', 'text-emerald-600'], ['A receber', 'R$ 1.610', 'text-gray-900'], ['Comissão plataforma', '8%', 'text-gray-900']].map(([label, value, color]) => (
+        {[
+          ['Total recebido',       formatCurrency(total),   'text-emerald-600'],
+          ['A receber',            formatCurrency(pending), 'text-gray-900'],
+          ['Comissão plataforma',  `${(COMMISSION_RATE*100).toFixed(0)}%`, 'text-gray-900'],
+        ].map(([label, value, color]) => (
           <div key={label} className="card p-4">
-            <div className="text-xs text-gray-400 mb-2">{label}</div>
-            <div className={`text-xl font-semibold ${color}`}>{value}</div>
+            <p className="text-xs text-gray-400 mb-2">{label}</p>
+            <p className={`text-xl font-bold ${color}`}>{value}</p>
           </div>
         ))}
       </div>
+
       <div className="card overflow-hidden">
-        <div className="px-4 py-3 border-b border-gray-100 text-sm font-medium">Histórico de transações</div>
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b border-gray-100">
-            <tr>{['Equipamento', 'Comprador', 'Lance final', 'Comissão 8%', 'Líquido', 'Status'].map(h => (
-              <th key={h} className="text-left text-xs font-medium text-gray-400 uppercase tracking-wide px-4 py-3">{h}</th>
-            ))}</tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {TRANSACTIONS.map(t => {
-              const commission = t.gross * COMMISSION
-              const net = t.gross - commission
-              return (
-                <tr key={t.title} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium">{t.title}</td>
-                  <td className="px-4 py-3 text-gray-600">{t.buyer}</td>
-                  <td className="px-4 py-3">{formatCurrency(t.gross)}</td>
-                  <td className="px-4 py-3 text-red-500">−{formatCurrency(commission)}</td>
-                  <td className="px-4 py-3 font-semibold text-emerald-600">{formatCurrency(net)}</td>
-                  <td className="px-4 py-3">
-                    {t.status === 'paid' ? <span className="badge-green">Repassado</span> : <span className="badge-amber">Aguardando</span>}
-                  </td>
+        <div className="px-4 py-3 border-b border-gray-100 text-sm font-semibold text-gray-900">
+          Histórico de transações
+        </div>
+        {loading ? (
+          <div className="p-8 text-center text-sm text-gray-400">Carregando...</div>
+        ) : transactions.length === 0 ? (
+          <div className="p-8 text-center text-sm text-gray-400">Nenhuma transação ainda.</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm min-w-[540px]">
+              <thead className="bg-gray-50 border-b border-gray-100">
+                <tr>
+                  {['Equipamento','Comprador','Valor bruto','Comissão','Líquido','Status'].map(h => (
+                    <th key={h} className="text-left text-xs font-medium text-gray-400 uppercase tracking-wide px-4 py-3">{h}</th>
+                  ))}
                 </tr>
-              )
-            })}
-          </tbody>
-        </table>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {transactions.map(t => (
+                  <tr key={t.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3 font-medium truncate max-w-[160px]">{t.auctions?.title ?? '—'}</td>
+                    <td className="px-4 py-3 text-gray-600">{t.companies?.razao_social ?? '—'}</td>
+                    <td className="px-4 py-3">{formatCurrency(t.gross_amount)}</td>
+                    <td className="px-4 py-3 text-red-500">−{formatCurrency(t.commission_amount ?? 0)}</td>
+                    <td className="px-4 py-3 font-semibold text-emerald-600">{formatCurrency(t.net_amount ?? 0)}</td>
+                    <td className="px-4 py-3">
+                      {t.status === 'paid'
+                        ? <span className="badge-green">Repassado</span>
+                        : <span className="badge-amber">Aguardando</span>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   )

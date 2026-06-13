@@ -1,18 +1,36 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Clock } from 'lucide-react'
 import { differenceInSeconds } from 'date-fns'
 
+const SNIPE_WINDOW = 30 // segundos — Regra 7
+
 /**
- * Exibe um contador regressivo até a data de encerramento do leilão.
- * Muda de cor conforme o tempo restante:
- *   > 24h  → verde
- *   < 24h  → âmbar
- *   < 1h   → vermelho
+ * Contador regressivo com anti-sniping:
+ * se um lance chegar enquanto secondsLeft < 30, o timer reseta para 30s.
+ *
+ * Props:
+ *   endsAt     — ISO string com data/hora de encerramento
+ *   lastBidAt  — ISO string do último lance (atualiza quando chega novo lance)
+ *   onExtended — callback chamado quando o timer é estendido por anti-sniping
  */
-export default function CountdownTimer({ endsAt }) {
+export default function CountdownTimer({ endsAt, lastBidAt, onExtended }) {
   const [secondsLeft, setSecondsLeft] = useState(() =>
     Math.max(0, differenceInSeconds(new Date(endsAt), new Date()))
   )
+  const prevLastBidAt = useRef(lastBidAt)
+
+  // Anti-sniping: novo lance nos últimos 30s → reseta para 30s
+  useEffect(() => {
+    if (!lastBidAt || lastBidAt === prevLastBidAt.current) return
+    prevLastBidAt.current = lastBidAt
+    setSecondsLeft(s => {
+      if (s > 0 && s < SNIPE_WINDOW) {
+        onExtended?.()
+        return SNIPE_WINDOW
+      }
+      return s
+    })
+  }, [lastBidAt])
 
   useEffect(() => {
     if (secondsLeft <= 0) return
@@ -20,7 +38,7 @@ export default function CountdownTimer({ endsAt }) {
       setSecondsLeft(s => Math.max(0, s - 1))
     }, 1000)
     return () => clearInterval(id)
-  }, [])
+  }, [secondsLeft <= 0])
 
   if (secondsLeft <= 0) {
     return (
@@ -34,7 +52,6 @@ export default function CountdownTimer({ endsAt }) {
   const hours = Math.floor((secondsLeft % 86400) / 3600)
   const minutes = Math.floor((secondsLeft % 3600) / 60)
   const secs = secondsLeft % 60
-
   const pad = n => String(n).padStart(2, '0')
 
   let label
@@ -47,10 +64,13 @@ export default function CountdownTimer({ endsAt }) {
     secondsLeft > 3600  ? 'timer-amber' :
     'timer-red'
 
+  const isSnipeZone = secondsLeft < SNIPE_WINDOW
+
   return (
-    <span className={colorClass}>
+    <span className={`${colorClass} ${isSnipeZone ? 'animate-pulse' : ''}`} title={isSnipeZone ? 'Últimos 30s — lances reiniciam o contador!' : undefined}>
       <Clock size={12} />
       {label}
+      {isSnipeZone && <span className="ml-1 text-[10px] font-bold">⚡</span>}
     </span>
   )
 }
