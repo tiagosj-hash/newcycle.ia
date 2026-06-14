@@ -8,48 +8,46 @@ export default function Navbar() {
   const navigate  = useNavigate()
   const location  = useLocation()
   const { session, company, signOut } = useAuth()
-  const [open, setOpen]       = useState(false)
+  const [open, setOpen]         = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => { setOpen(false) }, [location.pathname])
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 8)
-    window.addEventListener('scroll', handler, { passive: true })
-    return () => window.removeEventListener('scroll', handler)
+    const fn = () => setScrolled(window.scrollY > 4)
+    window.addEventListener('scroll', fn, { passive: true })
+    return () => window.removeEventListener('scroll', fn)
   }, [])
 
   const handleSignOut = async () => { await signOut(); navigate('/') }
 
   const linkCls = ({ isActive }) =>
     `px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-      isActive
-        ? 'bg-emerald-50 text-emerald-700'
-        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+      isActive ? 'bg-gray-100 text-gray-900' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
     }`
 
   return (
     <>
-      <nav className={`bg-white/95 backdrop-blur-sm border-b border-gray-200/80 px-4 md:px-6 flex items-center justify-between sticky top-0 z-50 h-[56px] transition-shadow duration-200 ${scrolled ? 'shadow-md' : 'shadow-sm'}`}>
+      <nav className={`bg-white/95 backdrop-blur-md border-b border-gray-200 px-4 md:px-6 flex items-center justify-between sticky top-0 z-50 h-14 transition-shadow duration-200 ${scrolled ? 'shadow-md' : ''}`}>
 
         {/* Logo */}
-        <NavLink to="/" className="flex items-center gap-2 group shrink-0">
-          <div className="w-8 h-8 bg-emerald-600 rounded-xl flex items-center justify-center shadow-sm group-hover:bg-emerald-700 transition-colors">
+        <NavLink to="/" className="flex items-center gap-2.5 shrink-0">
+          <div className="w-8 h-8 bg-brand-600 rounded-xl flex items-center justify-center">
             <Gavel size={15} className="text-white" />
           </div>
-          <span className="text-sm font-extrabold text-gray-900 tracking-tight">
-            new<span className="text-emerald-600">cycle</span>
-            <span className="text-gray-400 font-normal">.ia</span>
+          <span className="text-sm font-extrabold text-gray-900">
+            new<span className="text-brand-600">cycle</span>
+            <span className="text-gray-300 font-normal">.ia</span>
           </span>
         </NavLink>
 
         {/* Links desktop */}
-        <div className="hidden md:flex items-center gap-0.5">
+        <div className="hidden md:flex items-center gap-1">
           <NavLink to="/equipamentos" className={linkCls}>Equipamentos</NavLink>
           {session && <NavLink to="/painel" className={linkCls}>Painel</NavLink>}
           {company?.role === 'admin' && (
             <NavLink to="/admin" className={linkCls}>
-              <ShieldCheck size={13} className="inline mr-1 -mt-0.5" />Admin
+              <ShieldCheck size={12} className="inline mr-1" />Admin
             </NavLink>
           )}
         </div>
@@ -59,47 +57,40 @@ export default function Navbar() {
           {session ? (
             <>
               {company && (
-                <span className="text-xs text-gray-400 font-medium truncate max-w-[160px] hidden lg:block">
-                  {company.razao_social}
-                </span>
+                <span className="text-xs text-gray-400 truncate max-w-[160px] hidden lg:block">{company.razao_social}</span>
               )}
-              <button onClick={() => navigate('/painel/novo')} className="btn-primary text-xs px-3 py-2">
+              <button onClick={() => navigate('/painel/novo')} className="btn-primary btn-sm">
                 <Plus size={13} /> Novo leilão
               </button>
-              <button onClick={handleSignOut} className="btn-sm text-gray-500">
+              <button onClick={handleSignOut} className="btn-ghost btn-sm text-gray-500">
                 <LogOut size={13} /> Sair
               </button>
             </>
           ) : (
             <>
-              <button onClick={() => navigate('/login')} className="btn-sm">
+              <button onClick={() => navigate('/login')} className="btn-ghost btn-sm">
                 <LogIn size={13} /> Entrar
               </button>
-              <button onClick={() => navigate('/cadastro')} className="btn-primary text-xs px-3 py-2">
+              <button onClick={() => navigate('/cadastro')} className="btn-primary btn-sm">
                 Criar conta grátis
               </button>
             </>
           )}
         </div>
 
-        {/* Hamburger mobile */}
-        <button
-          className="md:hidden p-2 rounded-xl text-gray-500 hover:bg-gray-100 transition-colors"
-          onClick={() => setOpen(o => !o)}
-        >
-          {open ? <X size={20} /> : <Menu size={20} />}
+        {/* Hamburger */}
+        <button className="md:hidden p-2 rounded-xl hover:bg-gray-100 transition-colors" onClick={() => setOpen(o => !o)}>
+          {open ? <X size={20} className="text-gray-700" /> : <Menu size={20} className="text-gray-700" />}
         </button>
       </nav>
 
-      {/* Menu mobile */}
+      {/* Drawer mobile */}
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="md:hidden overflow-hidden bg-white border-b border-gray-200 shadow-lg z-40 relative"
+            initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.15 }}
+            className="md:hidden fixed top-14 inset-x-0 z-40 bg-white border-b border-gray-200 shadow-xl"
           >
             <div className="px-4 py-3 space-y-1">
               <NavLink to="/equipamentos" className={linkCls}>Equipamentos</NavLink>
@@ -112,8 +103,8 @@ export default function Navbar() {
             <div className="px-4 pb-4 pt-2 border-t border-gray-100">
               {session ? (
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs text-gray-500 font-medium truncate flex-1">{company?.razao_social}</span>
-                  <button onClick={handleSignOut} className="btn-sm text-red-500 border-red-200 hover:bg-red-50 shrink-0">
+                  <span className="text-xs text-gray-500 truncate">{company?.razao_social}</span>
+                  <button onClick={handleSignOut} className="btn-ghost btn-sm text-red-500 shrink-0">
                     <LogOut size={13} /> Sair
                   </button>
                 </div>
