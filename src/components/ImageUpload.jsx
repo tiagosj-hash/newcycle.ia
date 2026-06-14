@@ -92,8 +92,8 @@ export default function ImageUpload({ onResult, onImageUrl }) {
         onDragOver={e => e.preventDefault()}
         onDrop={handleDrop}
         className={`border-2 border-dashed rounded-xl transition-colors
-          ${status === 'idle' ? 'border-gray-200 hover:border-emerald-400 cursor-pointer hover:bg-emerald-50/30' : ''}
-          ${status === 'done' ? 'border-emerald-400 bg-emerald-50' : ''}
+          ${status === 'idle' ? 'border-gray-200 hover:border-brand-400 cursor-pointer hover:bg-brand-50/30' : ''}
+          ${status === 'done' ? 'border-brand-400 bg-brand-50' : ''}
           ${status === 'loading' || status === 'uploading' ? 'border-gray-200 bg-gray-50' : ''}
           ${status === 'error' ? 'border-red-300 bg-red-50' : ''}
         `}
@@ -103,9 +103,9 @@ export default function ImageUpload({ onResult, onImageUrl }) {
           <div className="relative">
             <img src={preview} alt="Preview" className="w-full h-44 object-cover rounded-[10px]" />
             {status === 'done' && (
-              <div className="absolute inset-0 bg-emerald-900/30 rounded-[10px] flex items-center justify-center">
+              <div className="absolute inset-0 bg-brand-900/30 rounded-[10px] flex items-center justify-center">
                 <div className="bg-white rounded-full p-2 shadow-lg">
-                  <Check size={20} className="text-emerald-600" />
+                  <Check size={20} className="text-brand-600" />
                 </div>
               </div>
             )}
@@ -139,7 +139,7 @@ export default function ImageUpload({ onResult, onImageUrl }) {
         <div className="mt-3">
           <div className="flex items-center justify-between mb-1.5">
             <div className="flex items-center gap-1.5">
-              <Sparkles size={12} className="text-emerald-600 animate-pulse" />
+              <Sparkles size={12} className="text-brand-600 animate-pulse" />
               <span className="text-xs text-gray-500">
                 {status === 'uploading' ? 'Enviando imagem...' : loadingMsg}
               </span>
@@ -147,7 +147,7 @@ export default function ImageUpload({ onResult, onImageUrl }) {
             <span className="text-xs text-gray-400">{progress}%</span>
           </div>
           <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-            <div className="h-full bg-emerald-500 rounded-full transition-all duration-100"
+            <div className="h-full bg-brand-500 rounded-full transition-all duration-100"
               style={{ width: `${progress}%` }} />
           </div>
         </div>
@@ -156,7 +156,7 @@ export default function ImageUpload({ onResult, onImageUrl }) {
       {/* Ação pós-análise */}
       {status === 'done' && (
         <div className="mt-3 flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-xs text-emerald-700 font-medium">
+          <div className="flex items-center gap-1.5 text-xs text-brand-700 font-medium">
             <Sparkles size={12} /> Análise concluída pela IA
           </div>
           <button onClick={reset} className="text-xs text-gray-400 flex items-center gap-1 hover:text-gray-600">

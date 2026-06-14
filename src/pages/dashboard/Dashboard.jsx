@@ -19,7 +19,7 @@ function CustomTooltip({ active, payload, label }) {
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-card-hover px-3 py-2 text-xs">
       <p className="text-gray-500 mb-1">{label}</p>
-      <p className="font-bold text-emerald-600">{payload[0].value} lances</p>
+      <p className="font-bold text-brand-600">{payload[0].value} lances</p>
     </div>
   )
 }
@@ -95,7 +95,7 @@ export default function Dashboard() {
       value: String(metrics.activeCount),
       sub: `${metrics.endingToday} encerram hoje`,
       icon: Gavel,
-      iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600',
+      iconBg: 'bg-brand-50', iconColor: 'text-brand-600',
       valueCls: 'text-gray-900',
       trend: null,
     },
@@ -114,7 +114,7 @@ export default function Dashboard() {
       sub: metrics.maxBidTitle ? metrics.maxBidTitle.slice(0, 28) + '…' : 'Nenhum lance ainda',
       icon: TrendingUp,
       iconBg: 'bg-violet-50', iconColor: 'text-violet-600',
-      valueCls: 'text-emerald-600',
+      valueCls: 'text-brand-600',
       trend: null,
     },
     {
@@ -122,8 +122,8 @@ export default function Dashboard() {
       value: 'R$ 0',
       sub: 'transações concluídas',
       icon: DollarSign,
-      iconBg: 'bg-emerald-50', iconColor: 'text-emerald-600',
-      valueCls: 'text-emerald-600',
+      iconBg: 'bg-brand-50', iconColor: 'text-brand-600',
+      valueCls: 'text-brand-600',
       trend: null,
     },
   ] : []
@@ -161,7 +161,7 @@ export default function Dashboard() {
                     <Icon size={18} className={iconColor} />
                   </div>
                   {trend && (
-                    <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full">
+                    <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded-full">
                       <ArrowUpRight size={10} />{trend}
                     </span>
                   )}
@@ -217,7 +217,7 @@ export default function Dashboard() {
         >
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm font-bold text-gray-900">Leilões ativos</p>
-            <button onClick={() => navigate('/painel/leiloes')} className="text-xs text-emerald-600 font-semibold hover:text-emerald-800 flex items-center gap-1">
+            <button onClick={() => navigate('/painel/leiloes')} className="text-xs text-brand-600 font-semibold hover:text-brand-800 flex items-center gap-1">
               Ver todos <ArrowUpRight size={12} />
             </button>
           </div>
@@ -246,9 +246,9 @@ export default function Dashboard() {
                       <p className="text-sm font-semibold text-gray-900 truncate">{a.title}</p>
                       <div className="flex items-center gap-2 mt-1.5">
                         <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                          <div className="h-full bg-emerald-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                          <div className="h-full bg-brand-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
                         </div>
-                        <span className="text-xs font-bold text-emerald-600 shrink-0">
+                        <span className="text-xs font-bold text-brand-600 shrink-0">
                           {a.currentBid ? formatCurrency(a.currentBid) : '—'}
                         </span>
                       </div>
@@ -273,7 +273,7 @@ export default function Dashboard() {
         <p className="text-sm font-bold text-gray-900 mb-4">Ações rápidas</p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-            { label: 'Novo leilão',     icon: Plus,        path: '/painel/novo',       bg: 'bg-emerald-50 hover:bg-emerald-100', color: 'text-emerald-700' },
+            { label: 'Novo leilão',     icon: Plus,        path: '/painel/novo',       bg: 'bg-brand-50 hover:bg-brand-100', color: 'text-brand-700' },
             { label: 'Meus leilões',    icon: Gavel,       path: '/painel/leiloes',    bg: 'bg-blue-50 hover:bg-blue-100',       color: 'text-blue-700' },
             { label: 'Financeiro',      icon: DollarSign,  path: '/painel/financeiro', bg: 'bg-violet-50 hover:bg-violet-100',   color: 'text-violet-700' },
             { label: 'Ver marketplace', icon: Eye,         path: '/equipamentos',      bg: 'bg-gray-100 hover:bg-gray-200',      color: 'text-gray-700' },

@@ -31,11 +31,11 @@ function SidebarContent({ onClose }) {
       {/* Logo */}
       <div className="px-4 py-5 border-b border-gray-100">
         <NavLink to="/" onClick={onClose} className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center shadow-sm group-hover:bg-emerald-700 transition-colors">
+          <div className="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center shadow-sm group-hover:bg-brand-700 transition-colors">
             <Gavel size={15} className="text-white" />
           </div>
           <span className="text-sm font-bold text-gray-900">
-            new<span className="text-emerald-600">cycle</span>
+            new<span className="text-brand-600">cycle</span>
             <span className="text-gray-400 font-normal">.ia</span>
           </span>
         </NavLink>
@@ -52,15 +52,15 @@ function SidebarContent({ onClose }) {
             className={({ isActive }) => [
               'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all group',
               isActive
-                ? 'bg-emerald-600 text-white shadow-sm'
+                ? 'bg-brand-600 text-white shadow-sm'
                 : highlight
-                  ? 'text-emerald-700 bg-emerald-50 hover:bg-emerald-100'
+                  ? 'text-brand-700 bg-brand-50 hover:bg-brand-100'
                   : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900',
             ].join(' ')}
           >
             {({ isActive }) => (
               <>
-                <Icon size={16} className={isActive ? 'text-white' : highlight ? 'text-emerald-600' : 'text-gray-400 group-hover:text-gray-600'} />
+                <Icon size={16} className={isActive ? 'text-white' : highlight ? 'text-brand-600' : 'text-gray-400 group-hover:text-gray-600'} />
                 <span className="flex-1">{label}</span>
                 {isActive && <ChevronRight size={13} className="text-white/60" />}
               </>
@@ -72,7 +72,7 @@ function SidebarContent({ onClose }) {
       {/* Company card */}
       <div className="px-3 py-4 border-t border-gray-100">
         <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl mb-2">
-          <div className="w-9 h-9 rounded-lg bg-emerald-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
+          <div className="w-9 h-9 rounded-lg bg-brand-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
             {initials}
           </div>
           <div className="min-w-0 flex-1">

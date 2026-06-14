@@ -23,11 +23,11 @@ export default function BidList({ bids = [] }) {
       {sorted.map((bid, i) => (
         <div
           key={bid.id}
-          className={`flex items-center justify-between py-3 px-4 ${i === 0 ? 'bg-emerald-50 -mx-4' : ''}`}
+          className={`flex items-center justify-between py-3 px-4 ${i === 0 ? 'bg-brand-50 -mx-4' : ''}`}
         >
           <div className="flex items-center gap-3">
             <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium
-              ${i === 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-500'}`}>
+              ${i === 0 ? 'bg-brand-100 text-brand-800' : 'bg-gray-100 text-gray-500'}`}>
               {i === 0 ? <Trophy size={12} /> : i + 1}
             </div>
             <div>
@@ -39,7 +39,7 @@ export default function BidList({ bids = [] }) {
             </div>
           </div>
           <div className="text-right">
-            <div className={`text-sm font-semibold ${i === 0 ? 'text-emerald-600' : 'text-gray-500'}`}>
+            <div className={`text-sm font-semibold ${i === 0 ? 'text-brand-600' : 'text-gray-500'}`}>
               {bid.amount.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
             </div>
             {i === 0 && <div className="badge-green text-xs mt-0.5">Vencendo</div>}

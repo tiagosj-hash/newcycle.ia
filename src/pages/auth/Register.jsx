@@ -71,24 +71,24 @@ export default function Register() {
         <div className="absolute inset-0 opacity-[0.04]"
           style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` }}
         />
-        <div className="absolute top-1/3 -left-20 w-72 h-72 bg-emerald-500/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-emerald-400/15 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 -left-20 w-72 h-72 bg-brand-500/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 -right-20 w-80 h-80 bg-brand-400/15 rounded-full blur-3xl" />
 
         <div className="relative z-10 flex items-center gap-3">
           <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center ring-1 ring-white/20">
-            <Gavel size={20} className="text-emerald-300" />
+            <Gavel size={20} className="text-brand-300" />
           </div>
           <span className="text-white text-lg font-bold tracking-tight">
-            new<span className="text-emerald-300">cycle</span><span className="text-white/50 font-normal">.ia</span>
+            new<span className="text-brand-300">cycle</span><span className="text-white/50 font-normal">.ia</span>
           </span>
         </div>
 
         <div className="relative z-10">
-          <p className="text-emerald-300/70 text-sm font-semibold uppercase tracking-widest mb-4">Cadastro gratuito</p>
+          <p className="text-brand-300/70 text-sm font-semibold uppercase tracking-widest mb-4">Cadastro gratuito</p>
           <h2 className="text-4xl font-extrabold text-white leading-tight mb-8">
             Comece a vender<br />
             equipamentos<br />
-            <span className="text-emerald-300">em minutos</span>
+            <span className="text-brand-300">em minutos</span>
           </h2>
 
           {/* Passos visuais */}
@@ -97,9 +97,9 @@ export default function Register() {
               <div key={num} className="flex items-center gap-4">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 transition-all duration-300 ${
                   step > num
-                    ? 'bg-emerald-400 text-white'
+                    ? 'bg-brand-400 text-white'
                     : step === num
-                      ? 'bg-white text-emerald-800'
+                      ? 'bg-white text-brand-800'
                       : 'bg-white/10 text-white/40'
                 }`}>
                   {step > num ? <CheckCircle size={15} /> : num}
@@ -121,11 +121,11 @@ export default function Register() {
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 bg-white">
         {/* Logo mobile */}
         <div className="lg:hidden flex items-center gap-2 mb-8">
-          <div className="w-9 h-9 bg-emerald-600 rounded-xl flex items-center justify-center">
+          <div className="w-9 h-9 bg-brand-600 rounded-xl flex items-center justify-center">
             <Gavel size={18} className="text-white" />
           </div>
           <span className="text-gray-900 text-base font-bold">
-            new<span className="text-emerald-600">cycle</span><span className="text-gray-400 font-normal">.ia</span>
+            new<span className="text-brand-600">cycle</span><span className="text-gray-400 font-normal">.ia</span>
           </span>
         </div>
 
@@ -135,10 +135,10 @@ export default function Register() {
             {/* Progresso mobile */}
             <div className="flex gap-1.5 mb-6 lg:hidden">
               {STEPS_INFO.map(({ num }) => (
-                <div key={num} className={`h-1 flex-1 rounded-full transition-all duration-300 ${step >= num ? 'bg-emerald-600' : 'bg-gray-200'}`} />
+                <div key={num} className={`h-1 flex-1 rounded-full transition-all duration-300 ${step >= num ? 'bg-brand-600' : 'bg-gray-200'}`} />
               ))}
             </div>
-            <p className="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-1">
+            <p className="text-xs font-bold text-brand-600 uppercase tracking-widest mb-1">
               Passo {step} de 3
             </p>
             <h1 className="text-2xl font-extrabold text-gray-900 mb-1">
@@ -280,9 +280,9 @@ export default function Register() {
                 </div>
               </div>
 
-              <div className="bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3 flex items-start gap-2.5">
-                <Sparkles size={14} className="text-emerald-600 shrink-0 mt-0.5" />
-                <p className="text-xs text-emerald-700 leading-relaxed">
+              <div className="bg-brand-50 border border-brand-100 rounded-xl px-4 py-3 flex items-start gap-2.5">
+                <Sparkles size={14} className="text-brand-600 shrink-0 mt-0.5" />
+                <p className="text-xs text-brand-700 leading-relaxed">
                   Ao criar sua conta, você concorda com os termos de uso. A verificação do CNPJ é feita pela equipe newcycle.ia em até 24h.
                 </p>
               </div>
@@ -303,7 +303,7 @@ export default function Register() {
 
           <p className="text-center text-sm text-gray-500 mt-6">
             Já tem conta?{' '}
-            <Link to="/login" className="text-emerald-600 font-semibold hover:text-emerald-700 transition-colors">
+            <Link to="/login" className="text-brand-600 font-semibold hover:text-brand-700 transition-colors">
               Entrar →
             </Link>
           </p>

@@ -85,7 +85,7 @@ export function MyAuctions() {
                     <tr>
                       <td colSpan={7} className="py-12 text-center text-sm text-gray-400">
                         Nenhum leilão ainda.{' '}
-                        <button onClick={() => navigate('/painel/novo')} className="text-emerald-600 font-medium hover:underline">
+                        <button onClick={() => navigate('/painel/novo')} className="text-brand-600 font-medium hover:underline">
                           Criar o primeiro
                         </button>
                       </td>
@@ -97,7 +97,7 @@ export function MyAuctions() {
                         <td className="px-4 py-3 text-gray-600 whitespace-nowrap">{formatCurrency(a.min_price)}</td>
                         <td className="px-4 py-3 font-semibold whitespace-nowrap">
                           {a.currentBid
-                            ? <span className="text-emerald-600">{formatCurrency(a.currentBid)}</span>
+                            ? <span className="text-brand-600">{formatCurrency(a.currentBid)}</span>
                             : <span className="text-gray-300 font-normal">—</span>}
                         </td>
                         <td className="px-4 py-3 text-gray-600">{a.totalBids}</td>
@@ -131,7 +131,7 @@ export function Bids() {
       <p className="text-sm text-gray-400 mb-6">Acompanhe em tempo real quem está disputando seus leilões</p>
       <div className="card p-5">
         <p className="text-sm text-gray-400 text-center py-8">
-          Selecione um leilão em <button className="text-emerald-600 font-medium hover:underline">Meus leilões</button> para ver os lances.
+          Selecione um leilão em <button className="text-brand-600 font-medium hover:underline">Meus leilões</button> para ver os lances.
         </p>
       </div>
     </div>
@@ -149,7 +149,7 @@ export function Profile() {
       <p className="text-sm text-gray-400 mb-6">Seus dados na plataforma newcycle.ia</p>
       <div className="card p-6">
         <div className="flex items-center gap-4 mb-6 pb-5 border-b border-gray-100">
-          <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-lg font-bold text-emerald-700">
+          <div className="w-14 h-14 rounded-2xl bg-brand-50 flex items-center justify-center text-lg font-bold text-brand-700">
             {initials}
           </div>
           <div>
@@ -208,7 +208,7 @@ export function Financial() {
 
       <div className="grid grid-cols-3 gap-3 mb-6">
         {[
-          ['Total recebido',       formatCurrency(total),   'text-emerald-600'],
+          ['Total recebido',       formatCurrency(total),   'text-brand-600'],
           ['A receber',            formatCurrency(pending), 'text-gray-900'],
           ['Comissão plataforma',  `${(COMMISSION_RATE*100).toFixed(0)}%`, 'text-gray-900'],
         ].map(([label, value, color]) => (
@@ -244,7 +244,7 @@ export function Financial() {
                     <td className="px-4 py-3 text-gray-600">{t.companies?.razao_social ?? '—'}</td>
                     <td className="px-4 py-3">{formatCurrency(t.gross_amount)}</td>
                     <td className="px-4 py-3 text-red-500">−{formatCurrency(t.commission_amount ?? 0)}</td>
-                    <td className="px-4 py-3 font-semibold text-emerald-600">{formatCurrency(t.net_amount ?? 0)}</td>
+                    <td className="px-4 py-3 font-semibold text-brand-600">{formatCurrency(t.net_amount ?? 0)}</td>
                     <td className="px-4 py-3">
                       {t.status === 'paid'
                         ? <span className="badge-green">Repassado</span>

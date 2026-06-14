@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Camera, Brain, Edit3, TrendingUp, Gavel, Building2, ShieldCheck, ArrowRight, Clock, Zap } from 'lucide-react'
+import { Camera, Brain, Edit3, TrendingUp, Gavel, Building2, ShieldCheck, ArrowRight, Clock, Zap, CheckCircle2, Star } from 'lucide-react'
 import AuctionCard from '../components/AuctionCard'
 import { addDays } from 'date-fns'
 
@@ -12,16 +12,17 @@ const MOCK_AUCTIONS = [
 ]
 
 const STEPS = [
-  { num: '01', icon: Camera,    title: 'Foto do equipamento', desc: 'Tire uma foto com o celular. Sem formulário, sem descrição manual.' },
-  { num: '02', icon: Brain,     title: 'IA identifica e precifica', desc: 'O modelo, valor de mercado e descrição são gerados automaticamente em segundos.' },
-  { num: '03', icon: Edit3,     title: 'Revise e publique', desc: 'Ajuste o preço mínimo e o prazo. Publique com um clique.' },
-  { num: '04', icon: TrendingUp, title: 'Receba lances', desc: 'Empresas com CNPJ verificado disputam. Você recebe o maior valor.' },
+  { num: '01', icon: Camera,     title: 'Foto do equipamento',    desc: 'Tire uma foto com o celular. Sem formulário, sem descrição manual.' },
+  { num: '02', icon: Brain,      title: 'IA identifica e precifica', desc: 'Modelo, valor de mercado e descrição gerados automaticamente em segundos.' },
+  { num: '03', icon: Edit3,      title: 'Revise e publique',      desc: 'Ajuste o preço mínimo e o prazo. Publique com um clique.' },
+  { num: '04', icon: TrendingUp, title: 'Receba lances',          desc: 'Empresas com CNPJ verificado disputam. Você recebe o maior valor.' },
 ]
 
-const STATS = [
-  { icon: Gavel,       value: '2.400+', label: 'leilões realizados',   color: 'text-brand-600', bg: 'bg-brand-50' },
-  { icon: Building2,   value: '380',    label: 'empresas cadastradas', color: 'text-blue-600',  bg: 'bg-blue-50' },
-  { icon: ShieldCheck, value: '100%',   label: 'compradores verificados', color: 'text-violet-600', bg: 'bg-violet-50' },
+const BENEFITS = [
+  'CNPJ verificado em todos os compradores',
+  'Pagamento garantido antes da retirada',
+  'Comissão de apenas 5% sobre a venda',
+  'Suporte em português 7 dias por semana',
 ]
 
 export default function Home() {
@@ -30,143 +31,199 @@ export default function Home() {
   return (
     <div className="bg-white">
 
-      {/* ── HERO ──────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden border-b border-gray-100"
-        style={{ background: 'linear-gradient(160deg, #031a12 0%, #063322 45%, #0a5539 100%)' }}>
+      {/* ── HERO ─────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden"
+        style={{ background: 'linear-gradient(140deg, #021610 0%, #04231a 35%, #063322 65%, #0a5539 100%)' }}>
 
-        {/* Pontos de fundo */}
-        <div className="absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px)`, backgroundSize: '32px 32px' }} />
+        {/* Background texture */}
+        <div className="absolute inset-0 pointer-events-none opacity-30"
+          style={{ backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.08) 1px, transparent 0)`, backgroundSize: '40px 40px' }} />
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] opacity-10 pointer-events-none"
+          style={{ background: 'radial-gradient(ellipse at center, #22c58a 0%, transparent 65%)' }} />
 
-        <div className="container-page relative z-10 py-20 md:py-28 grid md:grid-cols-2 gap-12 items-center">
+        <div className="container-page relative z-10 pt-24 pb-20 md:pt-32 md:pb-28">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
 
-          {/* Texto */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <div className="inline-flex items-center gap-2 bg-white/10 border border-white/15 rounded-full px-3 py-1.5 mb-6">
-              <Zap size={11} className="text-brand-400 fill-brand-400" />
-              <span className="text-2xs font-bold text-white/80 uppercase tracking-wider">Marketplace B2B com IA</span>
-            </div>
+            {/* Left — copy */}
+            <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
 
-            <h1 className="text-4xl md:text-5xl font-extrabold text-white leading-[1.1] mb-5">
-              Venda equipamentos<br />
-              corporativos em<br />
-              <span className="text-brand-400">minutos, não semanas</span>
-            </h1>
-
-            <p className="text-brand-200/70 text-base leading-relaxed mb-8 max-w-md">
-              Tire uma foto — a IA descreve e precifica. Compradores B2B com CNPJ verificado fazem lances em tempo real.
-            </p>
-
-            <div className="flex flex-wrap gap-3">
-              <button onClick={() => navigate('/cadastro')} className="btn-white px-6 py-2.5">
-                Começar grátis <ArrowRight size={15} />
-              </button>
-              <button onClick={() => navigate('/equipamentos')} className="btn-ghost-white px-6 py-2.5">
-                Ver leilões ativos
-              </button>
-            </div>
-
-            <div className="flex items-center gap-3 mt-8">
-              <div className="flex -space-x-2">
-                {['FR','CB','NS','GA','TL'].map(i => (
-                  <div key={i} className="w-7 h-7 rounded-full bg-brand-700 ring-2 ring-brand-900 flex items-center justify-center text-2xs font-bold text-brand-200">{i}</div>
-                ))}
+              <div className="inline-flex items-center gap-2 mb-6 px-3.5 py-1.5 rounded-full text-2xs font-bold uppercase tracking-widest text-brand-300"
+                style={{ background: 'rgba(34,197,138,0.12)', border: '1px solid rgba(34,197,138,0.2)' }}>
+                <Zap size={10} className="text-brand-400 fill-brand-400" />
+                Marketplace B2B com Inteligência Artificial
               </div>
-              <p className="text-sm text-white/50">
-                <strong className="text-white">+380 empresas</strong> já vendem na plataforma
+
+              <h1 className="text-5xl lg:text-6xl font-black text-white leading-[1.05] mb-6 tracking-tight">
+                Venda equipamentos<br />
+                corporativos em<br />
+                <span className="text-brand-400">minutos.</span>
+              </h1>
+
+              <p className="text-lg text-white/50 leading-relaxed mb-8 max-w-lg">
+                Tire uma foto — a IA descreve e precifica. Compradores B2B com CNPJ verificado fazem lances em tempo real.
               </p>
-            </div>
-          </motion.div>
 
-          {/* Card mock */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 16 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.55, delay: 0.15 }}
-            className="hidden md:flex justify-center"
-          >
-            <div className="w-72 bg-white rounded-2xl shadow-float overflow-hidden rotate-1 hover:rotate-0 transition-transform duration-500">
-              {/* Image area */}
-              <div className="h-36 bg-gradient-to-br from-blue-100 to-indigo-100 relative flex items-center justify-center">
-                <span className="text-6xl">💻</span>
-                <div className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/25 to-transparent" />
-                <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1 bg-red-500 text-white text-2xs font-bold px-2 py-0.5 rounded-full">
-                  <Clock size={8} className="animate-pulse" /> 02:14:33
-                </div>
-                <div className="absolute top-2.5 right-2.5 flex items-center gap-1 bg-brand-600 text-white text-2xs font-bold px-2 py-0.5 rounded-full">
-                  <TrendingUp size={9} /> 6 lances
-                </div>
+              {/* Benefits */}
+              <ul className="space-y-2.5 mb-10">
+                {BENEFITS.map(b => (
+                  <li key={b} className="flex items-center gap-2.5 text-sm text-white/60">
+                    <CheckCircle2 size={15} className="text-brand-400 shrink-0" />
+                    {b}
+                  </li>
+                ))}
+              </ul>
+
+              {/* CTAs */}
+              <div className="flex flex-wrap gap-3 mb-10">
+                <button onClick={() => navigate('/cadastro')} className="btn-white btn-lg px-8">
+                  Criar conta grátis <ArrowRight size={16} />
+                </button>
+                <button onClick={() => navigate('/equipamentos')} className="btn-ghost-white btn-lg">
+                  Ver leilões ativos
+                </button>
               </div>
 
-              {/* Body */}
-              <div className="p-4">
-                <p className="text-2xs text-gray-400 font-semibold uppercase tracking-wide mb-1">TI & Informática</p>
-                <p className="text-sm font-bold text-gray-900 leading-snug mb-3">
-                  Lenovo ThinkPad E14<br />
-                  <span className="font-normal text-gray-500">Lote 8 unidades</span>
-                </p>
-                <div className="pt-3 border-t border-gray-100">
-                  <p className="text-2xs text-gray-400 mb-0.5">Lance atual</p>
-                  <p className="text-xl font-extrabold text-brand-600 leading-none">R$ 9.800</p>
-                  <p className="text-2xs text-gray-400 mt-1">Mín. R$ 8.000</p>
+              {/* Social proof */}
+              <div className="flex items-center gap-4">
+                <div className="flex -space-x-2.5">
+                  {['F','C','N','G','T','M'].map(l => (
+                    <div key={l} className="w-8 h-8 rounded-full ring-2 ring-brand-900 flex items-center justify-center text-xs font-bold text-brand-200"
+                      style={{ background: `hsl(${l.charCodeAt(0)*17}deg 40% 30%)` }}>
+                      {l}
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <div className="flex items-center gap-1 mb-0.5">
+                    {[1,2,3,4,5].map(i => <Star key={i} size={11} className="text-amber-400 fill-amber-400" />)}
+                  </div>
+                  <p className="text-xs text-white/40">
+                    <span className="text-white/70 font-semibold">+380 empresas</span> já vendem na plataforma
+                  </p>
                 </div>
               </div>
+            </motion.div>
 
-              <div className="border-t border-gray-100 px-4 py-2.5 bg-gray-50 flex items-center justify-between">
-                <p className="text-2xs text-gray-400">Fintech Radius LTDA</p>
-                <span className="text-2xs font-bold text-brand-600">Ver leilão →</span>
+            {/* Right — preview card */}
+            <motion.div
+              initial={{ opacity: 0, y: 32, rotateY: -5 }}
+              animate={{ opacity: 1, y: 0, rotateY: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="hidden lg:flex justify-end"
+            >
+              <div className="relative">
+                {/* Main card */}
+                <div className="w-80 bg-white rounded-2xl overflow-hidden"
+                  style={{ boxShadow: '0 32px 64px -12px rgba(0,0,0,0.5), 0 8px 32px -8px rgba(0,0,0,0.3)' }}>
+                  <div className="h-44 bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 relative flex items-center justify-center">
+                    <span className="text-7xl select-none">💻</span>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                    <div className="absolute bottom-3 left-3 flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full text-red-500"
+                      style={{ background: 'rgba(255,255,255,0.92)', boxShadow: '0 1px 4px rgba(0,0,0,0.15)' }}>
+                      <Clock size={9} className="animate-pulse" /> 02:14:33
+                    </div>
+                    <div className="absolute top-3 right-3 flex items-center gap-1 text-2xs font-bold px-2.5 py-1 rounded-full bg-red-500/90 text-white backdrop-blur-sm">
+                      🔥 6 lances
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <p className="text-2xs font-bold uppercase tracking-widest text-blue-600 mb-2">TI & Informática</p>
+                    <p className="text-sm font-bold text-gray-900 leading-snug mb-1">Lenovo ThinkPad E14</p>
+                    <p className="text-xs text-gray-400 mb-4">Fintech Radius LTDA · Lote 8 unidades</p>
+                    <div className="h-px bg-gray-100 mb-3" />
+                    <div className="flex items-end justify-between">
+                      <div>
+                        <p className="text-2xs text-gray-400 mb-0.5">Lance atual</p>
+                        <p className="text-2xl font-extrabold text-brand-600 leading-none tabular-nums">R$ 9.800</p>
+                        <p className="text-2xs text-gray-400 mt-1">Mín. R$ 8.000</p>
+                      </div>
+                      <span className="text-2xs font-bold text-gray-400 flex items-center gap-0.5">
+                        Ver <ArrowRight size={10} />
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Floating badge */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8, y: 8 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  transition={{ delay: 0.7, type: 'spring', stiffness: 200 }}
+                  className="absolute -bottom-5 -left-10 bg-white rounded-xl px-4 py-3 flex items-center gap-3"
+                  style={{ boxShadow: '0 8px 24px rgba(0,0,0,0.15)' }}
+                >
+                  <div className="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center">
+                    <TrendingUp size={14} className="text-brand-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-900">Novo lance!</p>
+                    <p className="text-2xs text-gray-400">Construtora Beta → R$ 9.800</p>
+                  </div>
+                </motion.div>
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </div>
 
-        {/* Wave */}
-        <div className="absolute bottom-0 inset-x-0 h-12 bg-white"
-          style={{ clipPath: 'ellipse(55% 100% at 50% 100%)' }} />
+        {/* Bottom curve */}
+        <div className="absolute bottom-0 inset-x-0 overflow-hidden leading-[0]">
+          <svg viewBox="0 0 1440 48" preserveAspectRatio="none" className="w-full h-12 fill-white">
+            <path d="M0,48 L0,32 Q720,0 1440,32 L1440,48 Z" />
+          </svg>
+        </div>
       </section>
 
       {/* ── STATS ──────────────────────────────────────────────── */}
-      <section className="border-b border-gray-100">
-        <div className="container-page py-10 grid grid-cols-3 gap-4 sm:gap-8">
-          {STATS.map(({ icon: Icon, value, label, color, bg }) => (
-            <div key={label} className="flex items-center gap-3 sm:gap-4">
-              <div className={`w-11 h-11 ${bg} rounded-xl flex items-center justify-center shrink-0`}>
-                <Icon size={20} className={color} />
+      <section className="py-12 border-b border-gray-100">
+        <div className="container-page">
+          <div className="grid grid-cols-3 gap-6 sm:gap-12">
+            {[
+              { value: 'R$ 12M+', label: 'em equipamentos leiloados', color: 'text-brand-600' },
+              { value: '380',     label: 'empresas compradoras verificadas', color: 'text-blue-600' },
+              { value: '2.400+', label: 'leilões concluídos com sucesso', color: 'text-violet-600' },
+            ].map(({ value, label, color }) => (
+              <div key={label} className="text-center sm:text-left">
+                <p className={`text-3xl sm:text-4xl font-black ${color} leading-none mb-1.5 tabular-nums`}>{value}</p>
+                <p className="text-xs sm:text-sm text-gray-500 leading-snug">{label}</p>
               </div>
-              <div>
-                <p className={`text-2xl sm:text-3xl font-extrabold ${color} leading-none`}>{value}</p>
-                <p className="text-xs text-gray-500 mt-1 leading-tight">{label}</p>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ── COMO FUNCIONA ──────────────────────────────────────── */}
-      <section className="section bg-gray-50 border-b border-gray-100">
+      <section className="section bg-gray-50/70 border-b border-gray-100">
         <div className="container-page">
-          <div className="text-center mb-14">
-            <p className="label-section mb-3">Processo</p>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4">
-              Do upload ao recebimento
+          <div className="max-w-2xl mb-16">
+            <span className="label-section mb-3 block">Processo</span>
+            <h2 className="text-4xl font-black text-gray-900 mb-4 leading-tight">
+              Do upload ao recebimento<br />em 4 passos
             </h2>
-            <p className="text-gray-500 max-w-sm mx-auto">
-              Quatro passos simples para transformar equipamento parado em dinheiro na conta
+            <p className="text-gray-500 text-lg leading-relaxed">
+              Sem burocracia. Sem intermediários. A IA faz o trabalho pesado.
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-5">
-            {STEPS.map(({ num, icon: Icon, title, desc }) => (
-              <div key={num} className="bg-white rounded-2xl border border-gray-200 p-6 hover:border-brand-300 hover:shadow-card transition-all duration-200">
-                <div className="flex items-start justify-between mb-5">
-                  <div className="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center">
-                    <Icon size={18} className="text-brand-600" />
-                  </div>
-                  <span className="text-3xl font-black text-gray-100">{num}</span>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {STEPS.map(({ num, icon: Icon, title, desc }, i) => (
+              <motion.div
+                key={num}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+                className="bg-white rounded-2xl p-6 relative overflow-hidden group hover:-translate-y-1 transition-transform duration-200"
+                style={{ border: '1px solid #e5e7eb', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}
+              >
+                <span className="absolute top-4 right-5 text-5xl font-black text-gray-100 group-hover:text-brand-100 transition-colors select-none leading-none">
+                  {num}
+                </span>
+                <div className="w-11 h-11 bg-brand-50 rounded-xl flex items-center justify-center mb-5">
+                  <Icon size={20} className="text-brand-600" />
                 </div>
-                <h3 className="text-sm font-bold text-gray-900 mb-2">{title}</h3>
+                <h3 className="text-sm font-bold text-gray-900 mb-2 leading-snug">{title}</h3>
                 <p className="text-xs text-gray-500 leading-relaxed">{desc}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -175,21 +232,34 @@ export default function Home() {
       {/* ── LEILÕES EM DESTAQUE ────────────────────────────────── */}
       <section className="section border-b border-gray-100">
         <div className="container-page">
-          <div className="flex items-end justify-between mb-8">
+          <div className="flex items-end justify-between mb-10">
             <div>
-              <p className="label-section mb-2">Ao vivo agora</p>
-              <h2 className="text-3xl font-extrabold text-gray-900">Leilões em destaque</h2>
+              <span className="label-section mb-3 block">Ao vivo agora</span>
+              <h2 className="text-4xl font-black text-gray-900 leading-tight">Leilões em destaque</h2>
             </div>
-            <button onClick={() => navigate('/equipamentos')} className="btn-ghost text-sm hidden sm:flex">
-              Ver todos <ArrowRight size={14} />
+            <button
+              onClick={() => navigate('/equipamentos')}
+              className="btn-outline hidden sm:flex"
+            >
+              Ver todos <ArrowRight size={15} />
             </button>
           </div>
 
-          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {MOCK_AUCTIONS.map(a => <AuctionCard key={a.id} auction={a} />)}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {MOCK_AUCTIONS.map((a, i) => (
+              <motion.div
+                key={a.id}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+              >
+                <AuctionCard auction={a} />
+              </motion.div>
+            ))}
           </div>
 
-          <div className="mt-6 sm:hidden">
+          <div className="mt-8 sm:hidden">
             <button onClick={() => navigate('/equipamentos')} className="btn-outline w-full">
               Ver todos os leilões <ArrowRight size={14} />
             </button>
@@ -198,25 +268,28 @@ export default function Home() {
       </section>
 
       {/* ── CTA ────────────────────────────────────────────────── */}
-      <section className="section"
-        style={{ background: 'linear-gradient(135deg, #063322 0%, #0e7a52 100%)' }}>
-        <div className="container-page text-center">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">
-            Sua empresa tem equipamentos parados?
+      <section className="relative overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, #04231a 0%, #0a5539 50%, #0e7a52 100%)' }}>
+        <div className="absolute inset-0 pointer-events-none opacity-20"
+          style={{ backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.12) 1px, transparent 0)`, backgroundSize: '32px 32px' }} />
+        <div className="container-page relative z-10 py-24 text-center">
+          <span className="label-section text-brand-400 mb-4 block">Comece hoje</span>
+          <h2 className="text-4xl md:text-5xl font-black text-white mb-5 leading-tight">
+            Sua empresa tem equipamentos<br className="hidden md:block" /> parados?
           </h2>
-          <p className="text-brand-300/80 mb-8 max-w-md mx-auto">
+          <p className="text-white/50 text-lg mb-10 max-w-lg mx-auto leading-relaxed">
             Cadastre em menos de 2 minutos e receba ofertas de centenas de empresas verificadas.
           </p>
-          <div className="flex gap-3 justify-center flex-wrap">
-            <button onClick={() => navigate('/cadastro')} className="btn-white px-6 py-2.5 font-bold">
-              Criar conta grátis <ArrowRight size={15} />
+          <div className="flex gap-4 justify-center flex-wrap">
+            <button onClick={() => navigate('/cadastro')} className="btn-white btn-lg px-10">
+              Criar conta grátis <ArrowRight size={16} />
             </button>
-            <button onClick={() => navigate('/equipamentos')} className="btn-ghost-white px-6 py-2.5">
+            <button onClick={() => navigate('/equipamentos')} className="btn-ghost-white btn-lg px-8">
               Explorar leilões
             </button>
           </div>
-          <p className="text-brand-500 text-xs mt-5">
-            Sem mensalidade · Comissão de 5% só na venda · Compradores verificados
+          <p className="text-brand-500/60 text-xs mt-8 font-medium">
+            Sem mensalidade · Comissão de 5% só na venda · Compradores com CNPJ verificado
           </p>
         </div>
       </section>

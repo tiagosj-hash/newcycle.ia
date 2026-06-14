@@ -17,7 +17,7 @@ const CATEGORY_GRADIENT = {
   'Escritório':       'from-amber-50 via-orange-50 to-amber-50',
   'Industrial':       'from-gray-100 via-slate-100 to-gray-100',
   'AV & Telecom':     'from-violet-50 via-blue-50 to-violet-50',
-  'Saúde':            'from-emerald-50 via-teal-50 to-emerald-50',
+  'Saúde':            'from-brand-50 via-teal-50 to-brand-50',
 }
 
 const CONDITION_COLOR = {
@@ -104,7 +104,7 @@ export default function AuctionDetail() {
 
   if (loading) return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center gap-3 text-gray-400">
-      <div className="w-10 h-10 rounded-full border-2 border-emerald-500 border-t-transparent animate-spin" />
+      <div className="w-10 h-10 rounded-full border-2 border-brand-500 border-t-transparent animate-spin" />
       <span className="text-sm">Carregando leilão...</span>
     </div>
   )
@@ -163,8 +163,8 @@ export default function AuctionDetail() {
                   <span className={condBadge}>{auction.condition}</span>
                 )}
                 {auction.status === 'active' && (
-                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Ao vivo
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-brand-700 bg-brand-50 border border-brand-200 px-2 py-0.5 rounded-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse" /> Ao vivo
                   </span>
                 )}
               </div>
@@ -180,7 +180,7 @@ export default function AuctionDetail() {
             <div className="card p-5">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-sm font-bold flex items-center gap-2 text-gray-900">
-                  <TrendingUp size={15} className="text-emerald-600" />
+                  <TrendingUp size={15} className="text-brand-600" />
                   Histórico de lances
                 </h2>
                 <span className="badge-gray">{bids.length} lances</span>
@@ -242,19 +242,19 @@ export default function AuctionDetail() {
                   <div className="text-right">
                     <p className="text-[10px] text-gray-400 uppercase tracking-wide font-semibold mb-1">Lance atual</p>
                     {currentBid
-                      ? <p className="text-2xl font-extrabold text-emerald-600 leading-none">{formatCurrency(currentBid)}</p>
+                      ? <p className="text-2xl font-extrabold text-brand-600 leading-none">{formatCurrency(currentBid)}</p>
                       : <p className="text-sm text-gray-300 font-medium">Sem lances</p>
                     }
                   </div>
                 </div>
                 <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full transition-all duration-700"
+                    className="h-full bg-gradient-to-r from-brand-400 to-brand-600 rounded-full transition-all duration-700"
                     style={{ width: `${progressPct}%` }}
                   />
                 </div>
                 {currentBid && currentBid > auction.min_price && (
-                  <p className="text-[10px] text-emerald-600 font-medium mt-1.5">
+                  <p className="text-[10px] text-brand-600 font-medium mt-1.5">
                     +{((currentBid / auction.min_price - 1) * 100).toFixed(0)}% acima do mínimo
                   </p>
                 )}
@@ -282,7 +282,7 @@ export default function AuctionDetail() {
                   <p className="text-xs text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2 mb-2">{error}</p>
                 )}
                 {success && (
-                  <div className="flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 mb-2">
+                  <div className="flex items-center gap-1.5 text-xs text-brand-700 bg-brand-50 border border-brand-200 rounded-lg px-3 py-2 mb-2">
                     <CheckCircle size={13} /> Lance registrado com sucesso!
                   </div>
                 )}
@@ -319,7 +319,7 @@ export default function AuctionDetail() {
             <div className="card p-5">
               <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-4">Vendedor</h3>
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center text-sm font-bold text-white shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-sm font-bold text-white shrink-0">
                   {sellerInit}
                 </div>
                 <div>
@@ -329,8 +329,8 @@ export default function AuctionDetail() {
               </div>
               <div className="flex items-center gap-3 pt-3 border-t border-gray-100">
                 {seller?.cnpj_verified ? (
-                  <div className="flex items-center gap-1.5 text-xs text-emerald-700 font-medium">
-                    <Shield size={12} className="text-emerald-600" /> CNPJ verificado
+                  <div className="flex items-center gap-1.5 text-xs text-brand-700 font-medium">
+                    <Shield size={12} className="text-brand-600" /> CNPJ verificado
                   </div>
                 ) : (
                   <div className="flex items-center gap-1.5 text-xs text-amber-600">
