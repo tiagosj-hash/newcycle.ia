@@ -26,18 +26,16 @@ export function AuthProvider({ children }) {
   }, [session])
 
   const signUp = async ({ email, password, cnpj, razaoSocial, phone, city, state }) => {
-    const { data, error } = await supabase.auth.signUp({ email, password })
-    if (error) throw error
-    const { error: compErr } = await supabase.from('companies').insert({
-      user_id: data.user.id,
-      cnpj,
-      razao_social: razaoSocial,
+    // Company is created automatically via DB trigger on auth.users INSERT,
+    // so we just need to pass the data as user metadata.
+    const { error } = await supabase.auth.signUp({
       email,
-      phone,
-      city,
-      state,
+      password,
+      options: {
+        data: { cnpj, razao_social: razaoSocial, phone, city, state },
+      },
     })
-    if (compErr) throw compErr
+    if (error) throw error
   }
 
   const signIn = (email, password) =>
