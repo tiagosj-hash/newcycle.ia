@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Gavel, LogOut, LogIn, Menu, X, ShieldCheck, Plus, Recycle } from 'lucide-react'
+import { LogOut, LogIn, Menu, X, ShieldCheck, Plus, Recycle } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
 export default function Navbar() {
@@ -21,48 +21,82 @@ export default function Navbar() {
 
   const handleSignOut = async () => { await signOut(); navigate('/') }
 
-  const linkCls = ({ isActive }) =>
-    `px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${
-      isActive
-        ? 'bg-gray-100 text-gray-900 font-semibold'
-        : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'
-    }`
-
   return (
     <>
       <nav
-        className={`bg-white/95 backdrop-blur-md px-4 md:px-6 flex items-center justify-between sticky top-0 z-50 h-16 transition-all duration-200 ${
-          scrolled ? 'border-b border-gray-200' : 'border-b border-transparent'
-        }`}
-        style={scrolled ? { boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04)' } : {}}
+        className="sticky top-0 z-50 h-16 flex items-center justify-between px-4 md:px-6 transition-all duration-200"
+        style={{
+          background: scrolled ? 'rgba(255,255,255,0.97)' : 'rgba(255,255,255,0.95)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
+          borderBottom: scrolled ? '1px solid #e5e7eb' : '1px solid transparent',
+          boxShadow: scrolled ? '0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04)' : 'none',
+        }}
       >
-
-        {/* Logo */}
+        {/* ── Logo ──────────────────────────────────────── */}
         <NavLink to="/" className="flex items-center gap-2.5 shrink-0 group">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 group-hover:scale-105"
-            style={{ background: 'linear-gradient(180deg, #22c58a 0%, #16a36d 100%)', boxShadow: '0 2px 8px rgba(22,163,109,0.35)' }}>
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center transition-transform duration-150 group-hover:scale-105"
+            style={{
+              background: 'linear-gradient(145deg, #22c58a 0%, #0e7a52 100%)',
+              boxShadow: '0 2px 8px rgba(22,163,109,0.35)',
+            }}
+          >
             <Recycle size={17} className="text-white" strokeWidth={2.5} />
           </div>
-          <div className="leading-none">
+          <div className="leading-none select-none">
             <span className="text-[15px] font-black text-gray-900 tracking-tight">
-              new<span className="text-brand-600">cycle</span>
+              new<span style={{ color: '#16a36d' }}>cycle</span>
             </span>
             <span className="text-[15px] font-light text-gray-300">.ia</span>
           </div>
         </NavLink>
 
-        {/* Links desktop */}
-        <div className="hidden md:flex items-center gap-0.5">
-          <NavLink to="/equipamentos" className={linkCls}>Equipamentos</NavLink>
-          {session && <NavLink to="/painel" className={linkCls}>Painel</NavLink>}
+        {/* ── Links desktop ─────────────────────────────── */}
+        <div className="hidden md:flex items-center gap-1">
+          <NavLink
+            to="/equipamentos"
+            className={({ isActive }) =>
+              `px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-150 ${
+                isActive
+                  ? 'bg-gray-100 text-gray-900'
+                  : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+              }`
+            }
+          >
+            Equipamentos
+          </NavLink>
+
+          {session && (
+            <NavLink
+              to="/painel"
+              className={({ isActive }) =>
+                `px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-150 ${
+                  isActive
+                    ? 'bg-gray-100 text-gray-900'
+                    : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                }`
+              }
+            >
+              Painel
+            </NavLink>
+          )}
+
           {company?.role === 'admin' && (
-            <NavLink to="/admin" className={linkCls}>
-              <ShieldCheck size={13} className="inline mr-1 -mt-0.5" />Admin
+            <NavLink
+              to="/admin"
+              className={({ isActive }) =>
+                `px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-150 flex items-center gap-1 ${
+                  isActive ? 'bg-violet-100 text-violet-800' : 'text-violet-600 hover:bg-violet-50'
+                }`
+              }
+            >
+              <ShieldCheck size={13} />Admin
             </NavLink>
           )}
         </div>
 
-        {/* CTAs desktop */}
+        {/* ── CTAs desktop ──────────────────────────────── */}
         <div className="hidden md:flex items-center gap-2">
           {session ? (
             <>
@@ -71,29 +105,51 @@ export default function Navbar() {
                   {company.razao_social}
                 </span>
               )}
-              <button onClick={() => navigate('/painel/novo')} className="btn-primary btn-sm">
+              <button
+                onClick={() => navigate('/painel/novo')}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold text-white transition-all active:scale-95"
+                style={{
+                  background: 'linear-gradient(180deg, #22c58a 0%, #16a36d 100%)',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.1), 0 2px 8px rgba(22,163,109,0.25)',
+                }}
+              >
                 <Plus size={13} /> Novo leilão
               </button>
-              <button onClick={handleSignOut} className="btn-ghost btn-sm text-gray-500 hover:text-red-600">
-                <LogOut size={13} /> Sair
+              <button
+                onClick={handleSignOut}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium text-gray-500 hover:text-red-600 hover:bg-red-50 transition-all"
+              >
+                <LogOut size={14} />
+                <span className="hidden lg:inline">Sair</span>
               </button>
             </>
           ) : (
             <>
-              <button onClick={() => navigate('/login')} className="btn-ghost btn-sm text-gray-600">
+              <button
+                onClick={() => navigate('/login')}
+                className="px-3.5 py-2 rounded-xl text-sm font-semibold text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all"
+              >
                 Entrar
               </button>
-              <button onClick={() => navigate('/cadastro')} className="btn-primary btn-sm">
+              <button
+                onClick={() => navigate('/cadastro')}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold text-white transition-all active:scale-95"
+                style={{
+                  background: 'linear-gradient(180deg, #22c58a 0%, #16a36d 100%)',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.1), 0 2px 8px rgba(22,163,109,0.25)',
+                }}
+              >
                 Criar conta grátis
               </button>
             </>
           )}
         </div>
 
-        {/* Hamburger */}
+        {/* ── Hamburger mobile ──────────────────────────── */}
         <button
           className="md:hidden w-9 h-9 rounded-xl hover:bg-gray-100 transition-colors flex items-center justify-center"
           onClick={() => setOpen(o => !o)}
+          aria-label="Menu"
         >
           {open
             ? <X size={18} className="text-gray-700" />
@@ -101,7 +157,7 @@ export default function Navbar() {
         </button>
       </nav>
 
-      {/* Mobile drawer */}
+      {/* ── Mobile drawer ─────────────────────────────────── */}
       <AnimatePresence>
         {open && (
           <>
@@ -113,32 +169,54 @@ export default function Navbar() {
             <motion.div
               initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.15 }}
-              className="md:hidden fixed top-16 inset-x-0 z-40 bg-white"
-              style={{ borderBottom: '1px solid #e5e7eb', boxShadow: '0 8px 32px rgba(0,0,0,0.12)' }}
+              className="md:hidden fixed top-16 inset-x-0 z-40 bg-white border-b border-gray-200"
+              style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.12)' }}
             >
               <div className="px-4 py-3 space-y-1">
-                <NavLink to="/equipamentos" className={linkCls}>Equipamentos</NavLink>
-                {session && (
-                  <>
-                    <NavLink to="/painel" className={linkCls}>Painel</NavLink>
-                    <NavLink to="/painel/novo" className={linkCls}>+ Novo leilão</NavLink>
-                  </>
-                )}
-                {company?.role === 'admin' && <NavLink to="/admin" className={linkCls}>Admin</NavLink>}
+                {[
+                  { to: '/equipamentos', label: 'Equipamentos' },
+                  ...(session ? [{ to: '/painel', label: 'Painel' }, { to: '/painel/novo', label: '+ Novo leilão' }] : []),
+                  ...(company?.role === 'admin' ? [{ to: '/admin', label: 'Admin' }] : []),
+                ].map(({ to, label }) => (
+                  <NavLink
+                    key={to} to={to}
+                    className={({ isActive }) =>
+                      `block px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
+                        isActive ? 'bg-gray-100 text-gray-900' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                      }`
+                    }
+                  >
+                    {label}
+                  </NavLink>
+                ))}
               </div>
 
               <div className="px-4 pb-4 pt-3 border-t border-gray-100">
                 {session ? (
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-xs text-gray-500 font-medium truncate">{company?.razao_social}</span>
-                    <button onClick={handleSignOut} className="btn-ghost btn-sm text-red-500 shrink-0">
+                    <button
+                      onClick={handleSignOut}
+                      className="flex items-center gap-1.5 text-sm font-semibold text-red-500 hover:text-red-700 shrink-0"
+                    >
                       <LogOut size={13} /> Sair
                     </button>
                   </div>
                 ) : (
                   <div className="flex gap-2">
-                    <button onClick={() => navigate('/login')} className="btn-outline flex-1">Entrar</button>
-                    <button onClick={() => navigate('/cadastro')} className="btn-primary flex-1">Criar conta</button>
+                    <button
+                      onClick={() => navigate('/login')}
+                      className="flex-1 py-2 rounded-xl text-sm font-semibold text-gray-700 border border-gray-200 hover:bg-gray-50 transition-colors"
+                    >
+                      Entrar
+                    </button>
+                    <button
+                      onClick={() => navigate('/cadastro')}
+                      className="flex-1 py-2 rounded-xl text-sm font-bold text-white transition-all"
+                      style={{ background: 'linear-gradient(180deg, #22c58a, #16a36d)' }}
+                    >
+                      Criar conta
+                    </button>
                   </div>
                 )}
               </div>

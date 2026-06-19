@@ -217,6 +217,9 @@
 
   /* ─── Dashboard page container ───────────────────── */
   .page-container { @apply max-w-5xl mx-auto px-4 sm:px-6; }
+
+  /* ─── Input with icon ─────────────────────────────── */
+  .input-icon { @apply input pl-10; }
 }
 
 /* ─── Utilities ──────────────────────────────────────── */
