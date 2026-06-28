@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   Gavel, Mail, Lock, Building2, Phone, MapPin, Hash,
-  ArrowRight, CheckCircle, AlertCircle, Sparkles
+  ArrowRight, CheckCircle, AlertCircle, Sparkles, MailCheck
 } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 
@@ -23,8 +23,9 @@ export default function Register() {
     email: '', password: '', cnpj: '', razaoSocial: '',
     phone: '', city: '', state: 'SP',
   })
-  const [error, setError]     = useState('')
-  const [loading, setLoading] = useState(false)
+  const [error, setError]       = useState('')
+  const [loading, setLoading]   = useState(false)
+  const [emailSent, setEmailSent] = useState(false)
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
@@ -51,13 +52,47 @@ export default function Register() {
     setError('')
     setLoading(true)
     try {
-      await signUp(form)
-      navigate('/painel')
+      const { emailConfirmationRequired } = await signUp(form)
+      if (emailConfirmationRequired) {
+        setEmailSent(true)
+      } else {
+        navigate('/painel')
+      }
     } catch (err) {
       setError(err.message ?? 'Erro ao criar conta. Tente novamente.')
     } finally {
       setLoading(false)
     }
+  }
+
+  // Tela de confirmação de e-mail (Supabase com email confirmation ON)
+  if (emailSent) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-2xl p-10 max-w-md w-full text-center"
+          style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}
+        >
+          <div className="w-16 h-16 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-5"
+            style={{ boxShadow: '0 2px 12px rgba(22,163,109,0.15)' }}>
+            <MailCheck size={28} className="text-brand-600" />
+          </div>
+          <h1 className="text-2xl font-black text-gray-900 mb-2">Verifique seu e-mail</h1>
+          <p className="text-gray-500 mb-2 leading-relaxed">
+            Enviamos um link de confirmação para
+          </p>
+          <p className="font-bold text-gray-900 mb-6">{form.email}</p>
+          <p className="text-sm text-gray-400 mb-8">
+            Clique no link do e-mail para ativar sua conta e acessar o painel.
+            Verifique também a pasta de spam.
+          </p>
+          <button onClick={() => navigate('/login')} className="btn-primary w-full">
+            Ir para o login
+          </button>
+        </motion.div>
+      </div>
+    )
   }
 
   return (

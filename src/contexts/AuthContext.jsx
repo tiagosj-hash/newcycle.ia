@@ -26,9 +26,7 @@ export function AuthProvider({ children }) {
   }, [session])
 
   const signUp = async ({ email, password, cnpj, razaoSocial, phone, city, state }) => {
-    // Company is created automatically via DB trigger on auth.users INSERT,
-    // so we just need to pass the data as user metadata.
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -36,6 +34,25 @@ export function AuthProvider({ children }) {
       },
     })
     if (error) throw error
+
+    // Fallback: cria empresa diretamente caso o trigger do banco não exista.
+    // ignoreDuplicates: true → não falha se o trigger já criou.
+    if (data.session && data.user) {
+      await supabase.from('companies').upsert({
+        user_id:      data.user.id,
+        razao_social: razaoSocial,
+        cnpj:         cnpj.replace(/\D/g, ''),
+        email,
+        phone:        phone  || null,
+        city:         city   || null,
+        state:        state  || null,
+        role:         'seller',
+        cnpj_verified: false,
+      }, { onConflict: 'user_id', ignoreDuplicates: true })
+    }
+
+    // Informa se precisa de confirmação de e-mail
+    return { emailConfirmationRequired: !data.session }
   }
 
   const signIn = (email, password) =>

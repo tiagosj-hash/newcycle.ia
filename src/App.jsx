@@ -57,6 +57,16 @@ function PrivateRoute({ children }) {
   return session ? children : <Navigate to="/login" replace />
 }
 
+function GuestRoute({ children }) {
+  const { session, loading } = useAuth()
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
+  return session ? <Navigate to="/painel" replace /> : children
+}
+
 function PrivateAdminRoute({ children }) {
   const { session, company, loading } = useAuth()
   if (loading) return (
@@ -75,9 +85,9 @@ export default function App() {
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        {/* Auth — sem Navbar nem Footer */}
-        <Route path="/login"    element={<PageTransition><Login /></PageTransition>} />
-        <Route path="/cadastro" element={<PageTransition><Register /></PageTransition>} />
+        {/* Auth — sem Navbar nem Footer (redireciona se já logado) */}
+        <Route path="/login"    element={<GuestRoute><PageTransition><Login /></PageTransition></GuestRoute>} />
+        <Route path="/cadastro" element={<GuestRoute><PageTransition><Register /></PageTransition></GuestRoute>} />
 
         {/* Páginas públicas — com Navbar + Footer */}
         <Route path="/" element={
