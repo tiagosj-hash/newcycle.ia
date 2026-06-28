@@ -59,12 +59,10 @@ function PrivateRoute({ children }) {
 
 function GuestRoute({ children }) {
   const { session, loading } = useAuth()
-  if (loading) return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
-    </div>
-  )
-  return session ? <Navigate to="/painel" replace /> : children
+  // Enquanto carrega, mostra o form (evita flash de spinner).
+  // Só redireciona quando temos certeza que há sessão ativa.
+  if (!loading && session) return <Navigate to="/painel" replace />
+  return children
 }
 
 function PrivateAdminRoute({ children }) {
