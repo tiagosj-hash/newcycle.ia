@@ -25,7 +25,17 @@ export default function Login() {
     setLoading(true)
     const { error } = await signIn(form.email, form.password)
     setLoading(false)
-    if (error) { setError('E-mail ou senha incorretos. Verifique e tente novamente.'); return }
+    if (error) {
+      const msg = error.message ?? ''
+      if (msg.includes('Email not confirmed')) {
+        setError('Seu e-mail ainda não foi confirmado. Verifique sua caixa de entrada e a pasta de spam.')
+      } else if (msg.includes('Invalid login credentials') || msg.includes('invalid_credentials')) {
+        setError('E-mail ou senha incorretos. Verifique e tente novamente.')
+      } else {
+        setError(msg || 'Erro ao entrar. Tente novamente.')
+      }
+      return
+    }
     navigate('/painel')
   }
 
