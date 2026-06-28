@@ -129,7 +129,7 @@ export default function NewAuction() {
             <label className="text-xs text-gray-500 block mb-1">Preço mínimo (R$)</label>
             <input className="form-input" type="number" placeholder="0" value={form.minPrice} onChange={e => set('minPrice', e.target.value)} />
             {aiData?.suggestedMinPrice && (
-              <p className="text-xs text-emerald-600 mt-1">IA sugere: {formatCurrency(aiData.suggestedMinPrice)}</p>
+              <p className="text-xs text-brand-600 mt-1">IA sugere: {formatCurrency(aiData.suggestedMinPrice)}</p>
             )}
           </div>
           <div>
@@ -165,7 +165,7 @@ export default function NewAuction() {
             <button
               type="button"
               onClick={() => set('autoRelist', !form.autoRelist)}
-              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${form.autoRelist ? 'bg-emerald-500' : 'bg-gray-200'}`}
+              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${form.autoRelist ? 'bg-brand-500' : 'bg-gray-200'}`}
             >
               <span className={`inline-block h-3.5 w-3.5 rounded-full bg-white shadow transition-transform ${form.autoRelist ? 'translate-x-4' : 'translate-x-1'}`} />
             </button>
@@ -182,7 +182,7 @@ export default function NewAuction() {
                     key={n}
                     type="button"
                     onClick={() => set('maxRelistCount', n)}
-                    className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${form.maxRelistCount === n ? 'bg-emerald-50 border-emerald-400 text-emerald-700 font-medium' : 'border-gray-200 text-gray-600 hover:border-gray-300'}`}
+                    className={`px-3 py-1.5 rounded-lg text-sm border transition-colors ${form.maxRelistCount === n ? 'bg-brand-50 border-brand-400 text-brand-700 font-medium' : 'border-gray-200 text-gray-600 hover:border-gray-300'}`}
                   >
                     {n}x
                   </button>

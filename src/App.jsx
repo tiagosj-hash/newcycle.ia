@@ -2,16 +2,19 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useAuth } from './contexts/AuthContext'
 import Navbar from './components/Navbar'
+import Footer from './components/Footer'
 import DashboardLayout from './components/DashboardLayout'
 import AdminLayout from './pages/admin/AdminLayout'
 import Home from './pages/Home'
 import Browse from './pages/Browse'
 import AuctionDetail from './pages/AuctionDetail'
+import NotFound from './pages/NotFound'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import Dashboard from './pages/dashboard/Dashboard'
 import { MyAuctions, Bids, Profile, Financial } from './pages/dashboard'
 import NewAuction from './pages/dashboard/NewAuction'
+import EditAuction from './pages/dashboard/EditAuction'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AuctionModeration from './pages/admin/AuctionModeration'
 import Companies from './pages/admin/Companies'
@@ -26,6 +29,18 @@ function PageTransition({ children }) {
     >
       {children}
     </motion.div>
+  )
+}
+
+function PublicLayout({ children, noFooter = false }) {
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <PageTransition>
+        <main className="flex-1">{children}</main>
+      </PageTransition>
+      {!noFooter && <Footer />}
+    </div>
   )
 }
 
@@ -58,46 +73,68 @@ export default function App() {
   const location = useLocation()
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <AnimatePresence mode="wait">
-        <Routes location={location} key={location.pathname}>
-          {/* Rotas de auth — sem Navbar */}
-          <Route path="/login"    element={<PageTransition><Login /></PageTransition>} />
-          <Route path="/cadastro" element={<PageTransition><Register /></PageTransition>} />
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        {/* Auth — sem Navbar nem Footer */}
+        <Route path="/login"    element={<PageTransition><Login /></PageTransition>} />
+        <Route path="/cadastro" element={<PageTransition><Register /></PageTransition>} />
 
-          {/* Rotas públicas com Navbar */}
-          <Route path="/" element={<><Navbar /><PageTransition><Home /></PageTransition></>} />
-          <Route path="/equipamentos" element={<><Navbar /><PageTransition><Browse /></PageTransition></>} />
-          <Route path="/leilao/:id"   element={<><Navbar /><PageTransition><AuctionDetail /></PageTransition></>} />
+        {/* Páginas públicas — com Navbar + Footer */}
+        <Route path="/" element={
+          <PublicLayout>
+            <Home />
+          </PublicLayout>
+        } />
+        <Route path="/equipamentos" element={
+          <PublicLayout>
+            <Browse />
+          </PublicLayout>
+        } />
+        <Route path="/leilao/:id" element={
+          <PublicLayout noFooter>
+            <AuctionDetail />
+          </PublicLayout>
+        } />
 
-          {/* Painel do vendedor */}
-          <Route path="/painel" element={
-            <PrivateRoute>
+        {/* Painel do vendedor */}
+        <Route path="/painel" element={
+          <PrivateRoute>
+            <div className="flex flex-col min-h-screen">
               <Navbar />
               <DashboardLayout />
-            </PrivateRoute>
-          }>
-            <Route index           element={<Dashboard />} />
-            <Route path="leiloes"  element={<MyAuctions />} />
-            <Route path="lances"   element={<Bids />} />
-            <Route path="novo"     element={<NewAuction />} />
-            <Route path="perfil"   element={<Profile />} />
-            <Route path="financeiro" element={<Financial />} />
-          </Route>
+            </div>
+          </PrivateRoute>
+        }>
+          <Route index             element={<Dashboard />} />
+          <Route path="leiloes"    element={<MyAuctions />} />
+          <Route path="lances"     element={<Bids />} />
+          <Route path="novo"       element={<NewAuction />} />
+          <Route path="editar/:id" element={<EditAuction />} />
+          <Route path="perfil"     element={<Profile />} />
+          <Route path="financeiro" element={<Financial />} />
+        </Route>
 
-          {/* Painel admin */}
-          <Route path="/admin" element={
-            <PrivateAdminRoute>
+        {/* Painel admin */}
+        <Route path="/admin" element={
+          <PrivateAdminRoute>
+            <div className="flex flex-col min-h-screen">
               <Navbar />
               <AdminLayout />
-            </PrivateAdminRoute>
-          }>
-            <Route index           element={<AdminDashboard />} />
-            <Route path="moderacao" element={<AuctionModeration />} />
-            <Route path="empresas"  element={<Companies />} />
-          </Route>
-        </Routes>
-      </AnimatePresence>
-    </div>
+            </div>
+          </PrivateAdminRoute>
+        }>
+          <Route index            element={<AdminDashboard />} />
+          <Route path="moderacao" element={<AuctionModeration />} />
+          <Route path="empresas"  element={<Companies />} />
+        </Route>
+
+        {/* 404 */}
+        <Route path="*" element={
+          <PublicLayout>
+            <NotFound />
+          </PublicLayout>
+        } />
+      </Routes>
+    </AnimatePresence>
   )
 }

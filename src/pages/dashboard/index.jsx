@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ChevronDown, ChevronUp, TrendingUp, Gavel, Clock, CheckCircle2,
   AlertCircle, Building2, ExternalLink, Zap, Ban, RefreshCw,
-  Save, Loader2, ShieldCheck, ShieldOff,
+  Save, Loader2, ShieldCheck, ShieldOff, Pencil, X,
 } from 'lucide-react'
 import CountdownTimer from '../../components/CountdownTimer'
 import { SkeletonRow } from '../../components/Skeleton'
@@ -43,6 +43,8 @@ export function MyAuctions() {
   const [loading, setLoading]     = useState(true)
   const [actionId, setActionId]   = useState(null) // auction being acted upon
   const [toast, setToast]         = useState(null)
+  const [extendingId, setExtendingId] = useState(null)
+  const [extendDays, setExtendDays]   = useState(3)
 
   function showToast(msg, type = 'success') {
     setToast({ msg, type })
@@ -105,6 +107,23 @@ export function MyAuctions() {
       a.id === auction.id ? { ...a, status: 'ended' } : a
     ))
     showToast('Leilão encerrado.')
+  }
+
+  async function handleExtend(auction) {
+    setActionId(auction.id)
+    const currentEnd = auction.ends_at ? new Date(auction.ends_at) : new Date()
+    const newEnd = new Date(currentEnd.getTime() + extendDays * 24 * 60 * 60 * 1000)
+    const { error } = await supabase
+      .from('auctions')
+      .update({ ends_at: newEnd.toISOString() })
+      .eq('id', auction.id)
+    setActionId(null)
+    setExtendingId(null)
+    if (error) { showToast('Erro ao prorrogar: ' + error.message, 'error'); return }
+    setAuctions(prev => prev.map(a =>
+      a.id === auction.id ? { ...a, ends_at: newEnd.toISOString() } : a
+    ))
+    showToast(`Leilão prorrogado por mais ${extendDays} ${extendDays === 1 ? 'dia' : 'dias'}!`)
   }
 
   async function handleRelist(auction) {
@@ -244,18 +263,43 @@ export function MyAuctions() {
                             <StatusBadge status={a.status} />
                           </td>
                           <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1.5 flex-wrap">
                               {isActing ? (
                                 <Loader2 size={15} className="animate-spin text-gray-400" />
+                              ) : extendingId === a.id ? (
+                                /* Inline prorrogar */
+                                <>
+                                  <select
+                                    value={extendDays}
+                                    onChange={e => setExtendDays(Number(e.target.value))}
+                                    className="text-xs border border-gray-200 rounded-lg px-2 py-1 focus:outline-none focus:border-brand-400"
+                                  >
+                                    <option value={1}>+1 dia</option>
+                                    <option value={3}>+3 dias</option>
+                                    <option value={7}>+7 dias</option>
+                                  </select>
+                                  <button onClick={() => handleExtend(a)} className="btn-primary btn-sm">OK</button>
+                                  <button onClick={() => setExtendingId(null)} className="btn-ghost btn-sm p-1.5">
+                                    <X size={12} />
+                                  </button>
+                                </>
                               ) : (
                                 <>
                                   {a.status === 'draft' && (
-                                    <button
-                                      onClick={() => handlePublish(a)}
-                                      className="btn-primary btn-sm"
-                                    >
-                                      Publicar
-                                    </button>
+                                    <>
+                                      <button
+                                        onClick={() => navigate(`/painel/editar/${a.id}`)}
+                                        className="btn-outline btn-sm"
+                                      >
+                                        <Pencil size={11} /> Editar
+                                      </button>
+                                      <button
+                                        onClick={() => handlePublish(a)}
+                                        className="btn-primary btn-sm"
+                                      >
+                                        Publicar
+                                      </button>
+                                    </>
                                   )}
                                   {a.status === 'active' && (
                                     <>
@@ -266,8 +310,14 @@ export function MyAuctions() {
                                         <ExternalLink size={11} /> Ver
                                       </button>
                                       <button
+                                        onClick={() => setExtendingId(a.id)}
+                                        className="btn-outline btn-sm"
+                                      >
+                                        <Clock size={11} /> Prorrogar
+                                      </button>
+                                      <button
                                         onClick={() => handleClose(a)}
-                                        className="btn-sm text-red-600 border border-red-200 hover:bg-red-50 bg-white rounded-lg px-2 py-1"
+                                        className="btn-sm text-red-600 border border-red-200 hover:bg-red-50 bg-white rounded-lg px-2 py-1 inline-flex items-center gap-1"
                                       >
                                         <Ban size={11} /> Encerrar
                                       </button>
