@@ -24,8 +24,8 @@ const NAV_COLS = [
     title: 'Suporte',
     links: [
       { label: 'Contato',           href: 'mailto:suporte@newcycle.ia' },
-      { label: 'Termos de uso',     to: '/' },
-      { label: 'Política de privacidade', to: '/' },
+      { label: 'Termos de uso',     href: 'mailto:suporte@newcycle.ia' },
+      { label: 'Privacidade',       href: 'mailto:suporte@newcycle.ia' },
     ],
   },
 ]

@@ -34,9 +34,10 @@ export default function AuctionModeration() {
   async function moderate(id, action) {
     setActing(id)
     const newStatus = action === 'approve' ? 'active' : 'cancelled'
-    await supabase.from('auctions').update({ status: newStatus }).eq('id', id)
-    setAuctions(prev => prev.filter(a => a.id !== id))
+    const { error } = await supabase.from('auctions').update({ status: newStatus }).eq('id', id)
     setActing(null)
+    if (error) { alert('Erro ao moderar: ' + error.message); return }
+    setAuctions(prev => prev.filter(a => a.id !== id))
   }
 
   const pending = auctions.filter(a => a.status === 'pending_moderation')

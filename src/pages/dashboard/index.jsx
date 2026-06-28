@@ -753,6 +753,7 @@ export function Financial() {
       .eq('seller_id', company.id)
       .order('created_at', { ascending: false })
       .then(({ data }) => { setTransactions(data ?? []); setLoading(false) })
+      .catch(() => setLoading(false))
   }, [company])
 
   const total   = transactions.reduce((s, t) => s + (t.net_amount ?? 0), 0)

@@ -65,7 +65,7 @@ function PrivateAdminRoute({ children }) {
     </div>
   )
   if (!session) return <Navigate to="/login" replace />
-  if (company && company.role !== 'admin') return <Navigate to="/painel" replace />
+  if (!company || company.role !== 'admin') return <Navigate to="/painel" replace />
   return children
 }
 
