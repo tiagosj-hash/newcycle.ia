@@ -31,6 +31,7 @@ export function AuthProvider({ children }) {
       password,
       options: {
         data: { cnpj, razao_social: razaoSocial, phone, city, state },
+        emailRedirectTo: `${window.location.origin}/painel`,
       },
     })
     if (error) throw error
